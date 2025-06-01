@@ -1,0 +1,3625 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form 15CA/15CB Enterprise Management System | TaxPro Suite Enterprise Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+      * { 
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
+      }
+
+      :root {
+      --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+      --secondary-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      --dark-gradient: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      --success-gradient: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+      --danger-gradient: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --sidebar-glass: rgba(30, 41, 59, 0.8);
+      }
+
+      body {
+      background: #0f172a;
+      position: relative;
+      overflow-x: hidden;
+      }
+
+      body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 20% 30%, #6366f120 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, #8b5cf620 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, #ec489920 0%, transparent 50%);
+      animation: bgMove 20s ease-in-out infinite;
+      z-index: -1;
+      }
+
+      @keyframes bgMove {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.1); }
+      }
+
+      .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      }
+
+      .gradient-text {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      }
+
+      .btn-primary {
+      background: var(--primary-gradient);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      }
+
+      .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+      }
+
+      .btn-primary:hover::before {
+      left: 100%;
+      }
+
+      .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5);
+      }
+
+      .form-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      transition: all 0.3s ease;
+      }
+
+      .form-input:focus {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+      outline: none;
+      }
+
+      .form-input option {
+      background: #1e293b;
+      color: white;
+      }
+
+      /* Enhanced Sidebar with Glass Effect */
+      .sidebar {
+      background: var(--sidebar-glass);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      }
+
+      .sidebar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 50%, rgba(236, 72, 153, 0.1) 100%);
+      pointer-events: none;
+      }
+
+      .sidebar-item {
+      position: relative;
+      transition: all 0.3s ease;
+      background: transparent;
+      backdrop-filter: blur(10px);
+      }
+
+      .sidebar-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: var(--primary-gradient);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+      }
+
+      .sidebar-item:hover::before,
+      .sidebar-item.active::before {
+      transform: scaleY(1);
+      }
+
+      .sidebar-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      padding-left: 20px;
+      backdrop-filter: blur(15px);
+      }
+
+      .sidebar-item.active {
+      background: rgba(99, 102, 241, 0.1);
+      }
+
+      .card-hover {
+      transition: all 0.3s ease;
+      }
+
+      .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.3);
+      }
+
+      .stat-card {
+      position: relative;
+      overflow: hidden;
+      }
+
+      .stat-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: pulse 3s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.5); opacity: 0; }
+      }
+
+      .fade-in {
+      animation: fadeIn 0.6s ease-out;
+      }
+
+      @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+      }
+
+      .slide-in-left {
+      animation: slideInLeft 0.5s ease-out;
+      }
+
+      @keyframes slideInLeft {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(0); }
+      }
+
+      .slide-in-right {
+      animation: slideInRight 0.5s ease-out;
+      }
+
+      @keyframes slideInRight {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+      }
+
+      .loader {
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #6366f1;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+      }
+
+      .notification {
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      }
+
+      .notification.show {
+      transform: translateX(0);
+      }
+
+      /* Enhanced table row styling for better readability */
+      .table-row {
+      transition: all 0.3s ease;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(10px);
+      }
+
+      .table-row:hover {
+      background: rgba(30, 41, 59, 0.8);
+      transform: scale(1.01);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .table-row .text-label {
+      color: #94a3b8;
+      font-weight: 500;
+      }
+
+      .table-row .text-value {
+      color: #e2e8f0;
+      }
+
+      .modal-backdrop {
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      }
+
+      .chart-container {
+      position: relative;
+      height: 300px;
+      }
+
+      .form-section {
+      border-left: 3px solid;
+      border-image: var(--primary-gradient) 1;
+      }
+
+      .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      }
+
+      .progress-fill {
+      height: 100%;
+      background: var(--primary-gradient);
+      transition: width 0.5s ease;
+      }
+
+      /* Custom Alert Styles */
+      .sweet-alert {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      min-width: 400px;
+      max-width: 500px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 9999;
+      }
+
+      .sweet-alert.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      }
+
+      .sweet-alert-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      }
+
+      .sweet-alert-icon.success {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      }
+
+      .sweet-alert-icon.error {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      }
+
+      .sweet-alert-icon.warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+      }
+
+      .sweet-alert-icon.info {
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+      }
+
+      .sweet-alert-icon.question {
+      background: rgba(139, 92, 246, 0.2);
+      color: #8b5cf6;
+      }
+
+      .sweet-alert-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      }
+
+      .sweet-alert-text {
+      color: #94a3b8;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      }
+
+      .sweet-alert-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      }
+
+      .sweet-alert-button {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      }
+
+      .sweet-alert-button.confirm {
+      background: var(--primary-gradient);
+      color: white;
+      }
+
+      .sweet-alert-button.confirm:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5);
+      }
+
+      .sweet-alert-button.cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      }
+
+      .sweet-alert-button.cancel:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      }
+
+      ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Enhanced Search Input */
+      .search-input-wrapper {
+      position: relative;
+      }
+
+      .search-input-wrapper .search-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      margin-top: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      display: none;
+      }
+
+      .search-input-wrapper .search-suggestions.show {
+      display: block;
+      }
+
+      .search-suggestion-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      }
+
+      .search-suggestion-item:hover {
+      background: rgba(99, 102, 241, 0.2);
+      }
+
+      .search-highlight {
+      background: rgba(99, 102, 241, 0.4);
+      color: white;
+      font-weight: 600;
+      padding: 0 2px;
+      border-radius: 2px;
+      }
+    </style>
+  </head>
+  <body class="text-white">
+    <!-- Sweet Alert Container -->
+    <div id="sweetAlertContainer"></div>
+
+    <!-- Main Container -->
+    <div class="flex h-screen">
+      <!-- Enhanced Sidebar with Glass Effect -->
+      <div class="sidebar w-64 h-full slide-in-left relative z-10">
+        <div class="p-6 relative">
+          <div class="flex items-center mb-8">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mr-3">
+              <i class="fas fa-file-invoice text-white text-lg"></i>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold gradient-text">TaxPro Suite</h1>
+              <p class="text-xs text-gray-400">Enterprise Edition v2.0</p>
+            </div>
+          </div>
+
+          <nav class="space-y-2">
+            <a href="#" onclick="showSection('dashboard')" class="sidebar-item active flex items-center p-3 rounded-lg text-gray-300 hover:text-white">
+              <i class="fas fa-th-large w-5 mr-3"></i>
+              <span>Dashboard</span>
+            </a>
+            <a href="#" onclick="showSection('forms')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-300 hover:text-white">
+              <i class="fas fa-file-alt w-5 mr-3"></i>
+              <span>Create Form</span>
+            </a>
+            <a href="#" onclick="showSection('entries')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-300 hover:text-white">
+              <i class="fas fa-database w-5 mr-3"></i>
+              <span>Manage Entries</span>
+            </a>
+            <a href="#" onclick="showSection('bulk')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-300 hover:text-white">
+              <i class="fas fa-magic w-5 mr-3"></i>
+              <span>AI Bulk Import</span>
+            </a>
+            <a href="#" onclick="showSection('analytics')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-300 hover:text-white">
+              <i class="fas fa-chart-line w-5 mr-3"></i>
+              <span>Analytics</span>
+            </a>
+            <a href="#" onclick="showSection('master')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-300 hover:text-white">
+              <i class="fas fa-cogs w-5 mr-3"></i>
+              <span>Master Data</span>
+            </a>
+            <a href="#" onclick="showSection('import-export')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-300 hover:text-white">
+              <i class="fas fa-exchange-alt w-5 mr-3"></i>
+              <span>Import/Export</span>
+            </a>
+            <a href="#" onclick="showSection('activity')" class="sidebar-item flex items-center p-3 rounded-lg text-gray-300 hover:text-white">
+              <i class="fas fa-history w-5 mr-3"></i>
+              <span>Activity Log</span>
+            </a>
+          </nav>
+
+          <div class="mt-auto pt-8">
+            <div class="glass-card rounded-lg p-4">
+              <p class="text-sm text-gray-400 mb-2">Storage Used</p>
+              <div class="progress-bar mb-2">
+                <div class="progress-fill" id="storageBar" style="width: 0%"></div>
+              </div>
+              <p class="text-xs text-gray-500"><span id="storageText">0 KB</span> / <span id="storageLimit">10 MB</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="flex-1 overflow-y-auto">
+        <!-- Top Bar -->
+        <div class="glass-card border-b border-gray-700 px-6 py-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-2xl font-bold" id="sectionTitle">Dashboard</h2>
+              <p class="text-sm text-gray-400" id="sectionSubtitle">Overview of your tax forms</p>
+            </div>
+            <div class="flex items-center space-x-4">
+              <button onclick="showQuickActions()" class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                <i class="fas fa-bolt text-yellow-400"></i>
+              </button>
+              <button onclick="showNotifications()" class="p-2 rounded-lg hover:bg-white/10 transition-colors relative">
+                <i class="fas fa-bell"></i>
+                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+              </button>
+              <div class="flex items-center space-x-3 ml-4 pl-4 border-l border-gray-700">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                  <i class="fas fa-user text-sm"></i>
+                </div>
+                <span class="text-sm">Admin User</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="p-6">
+          <!-- Dashboard Section -->
+          <div id="dashboard-section" class="fade-in">
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+              <div class="glass-card rounded-xl p-6 stat-card card-hover">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                    <i class="fas fa-file-alt text-blue-400 text-xl"></i>
+                  </div>
+                  <span class="badge bg-blue-500/20 text-blue-400">15CA-A</span>
+                </div>
+                <h3 class="text-3xl font-bold mb-1" id="count-15CA-A">0</h3>
+                <p class="text-sm text-gray-400">Basic Remittances</p>
+                <div class="mt-4 text-xs text-gray-500">
+                  <i class="fas fa-arrow-up text-green-400 mr-1"></i> 12% from last month
+                </div>
+              </div>
+
+              <div class="glass-card rounded-xl p-6 stat-card card-hover">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center">
+                    <i class="fas fa-file-contract text-green-400 text-xl"></i>
+                  </div>
+                  <span class="badge bg-green-500/20 text-green-400">15CA-B</span>
+                </div>
+                <h3 class="text-3xl font-bold mb-1" id="count-15CA-B">0</h3>
+                <p class="text-sm text-gray-400">With AO Orders</p>
+                <div class="mt-4 text-xs text-gray-500">
+                  <i class="fas fa-arrow-down text-red-400 mr-1"></i> 5% from last month
+                </div>
+              </div>
+
+              <div class="glass-card rounded-xl p-6 stat-card card-hover">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                    <i class="fas fa-file-invoice-dollar text-purple-400 text-xl"></i>
+                  </div>
+                  <span class="badge bg-purple-500/20 text-purple-400">15CA-C</span>
+                </div>
+                <h3 class="text-3xl font-bold mb-1" id="count-15CA-C">0</h3>
+                <p class="text-sm text-gray-400">Comprehensive</p>
+                <div class="mt-4 text-xs text-gray-500">
+                  <i class="fas fa-arrow-up text-green-400 mr-1"></i> 8% from last month
+                </div>
+              </div>
+
+              <div class="glass-card rounded-xl p-6 stat-card card-hover">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-12 h-12 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                    <i class="fas fa-file-export text-orange-400 text-xl"></i>
+                  </div>
+                  <span class="badge bg-orange-500/20 text-orange-400">15CA-D</span>
+                </div>
+                <h3 class="text-3xl font-bold mb-1" id="count-15CA-D">0</h3>
+                <p class="text-sm text-gray-400">Simplified</p>
+                <div class="mt-4 text-xs text-gray-500">
+                  <i class="fas fa-minus text-gray-400 mr-1"></i> No change
+                </div>
+              </div>
+
+              <div class="glass-card rounded-xl p-6 stat-card card-hover">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center">
+                    <i class="fas fa-certificate text-red-400 text-xl"></i>
+                  </div>
+                  <span class="badge bg-red-500/20 text-red-400">15CB</span>
+                </div>
+                <h3 class="text-3xl font-bold mb-1" id="count-15CB">0</h3>
+                <p class="text-sm text-gray-400">CA Certificates</p>
+                <div class="mt-4 text-xs text-gray-500">
+                  <i class="fas fa-arrow-up text-green-400 mr-1"></i> 15% from last month
+                </div>
+              </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Monthly Trends</h3>
+                <div class="chart-container">
+                  <canvas id="trendsChart"></canvas>
+                </div>
+              </div>
+
+              <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Form Distribution</h3>
+                <div class="chart-container">
+                  <canvas id="distributionChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="glass-card rounded-xl p-6">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold">Recent Activity</h3>
+                <button onclick="showSection('activity')" class="text-sm text-indigo-400 hover:text-indigo-300">
+                  View All <i class="fas fa-arrow-right ml-1"></i>
+                </button>
+              </div>
+              <div id="recentActivity" class="space-y-4">
+                <div class="text-center py-8 text-gray-500">
+                  <i class="fas fa-inbox text-4xl mb-4"></i>
+                  <p>No recent activity</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Forms Section -->
+          <div id="forms-section" class="hidden fade-in">
+            <div class="glass-card rounded-xl p-8">
+              <h3 class="text-xl font-bold mb-6">Select Form Type</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <button onclick="showForm('15CA-A')" class="group glass-card rounded-xl p-6 text-center hover:scale-105 transition-all duration-300 card-hover">
+                  <div class="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-file-alt text-blue-400 text-2xl"></i>
+                  </div>
+                  <h4 class="font-semibold mb-2">Form 15CA-A</h4>
+                  <p class="text-sm text-gray-400">Basic Remittance</p>
+                </button>
+
+                <button onclick="showForm('15CA-B')" class="group glass-card rounded-xl p-6 text-center hover:scale-105 transition-all duration-300 card-hover">
+                  <div class="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-file-contract text-green-400 text-2xl"></i>
+                  </div>
+                  <h4 class="font-semibold mb-2">Form 15CA-B</h4>
+                  <p class="text-sm text-gray-400">With AO Orders</p>
+                </button>
+
+                <button onclick="showForm('15CA-C')" class="group glass-card rounded-xl p-6 text-center hover:scale-105 transition-all duration-300 card-hover">
+                  <div class="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-file-invoice-dollar text-purple-400 text-2xl"></i>
+                  </div>
+                  <h4 class="font-semibold mb-2">Form 15CA-C</h4>
+                  <p class="text-sm text-gray-400">Comprehensive</p>
+                </button>
+
+                <button onclick="showForm('15CA-D')" class="group glass-card rounded-xl p-6 text-center hover:scale-105 transition-all duration-300 card-hover">
+                  <div class="w-16 h-16 rounded-full bg-orange-500/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-file-export text-orange-400 text-2xl"></i>
+                  </div>
+                  <h4 class="font-semibold mb-2">Form 15CA-D</h4>
+                  <p class="text-sm text-gray-400">Simplified</p>
+                </button>
+
+                <button onclick="showForm('15CB')" class="group glass-card rounded-xl p-6 text-center hover:scale-105 transition-all duration-300 card-hover">
+                  <div class="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-certificate text-red-400 text-2xl"></i>
+                  </div>
+                  <h4 class="font-semibold mb-2">Form 15CB</h4>
+                  <p class="text-sm text-gray-400">CA Certificate</p>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Container -->
+          <div id="form-container" class="hidden fade-in">
+            <div class="glass-card rounded-xl p-8">
+              <div class="flex justify-between items-center mb-6">
+                <div>
+                  <h3 id="formTitle" class="text-2xl font-bold mb-1"></h3>
+                  <p class="text-sm text-gray-400">Fill in all required fields marked with *</p>
+                </div>
+                <div class="flex space-x-3">
+                  <button onclick="fillSampleData()" class="px-4 py-2 rounded-lg bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 transition-colors">
+                    <i class="fas fa-flask mr-2"></i>Test Data
+                  </button>
+                  <button onclick="clearForm()" class="px-4 py-2 rounded-lg bg-gray-500/20 text-gray-400 hover:bg-gray-500/30 transition-colors">
+                    <i class="fas fa-eraser mr-2"></i>Clear
+                  </button>
+                  <button onclick="showSection('forms')" class="px-4 py-2 rounded-lg bg-gray-500/20 text-gray-400 hover:bg-gray-500/30 transition-colors">
+                    <i class="fas fa-times mr-2"></i>Cancel
+                  </button>
+                </div>
+              </div>
+
+              <form id="dataForm" class="space-y-8"></form>
+
+              <div class="flex justify-end space-x-4 mt-8">
+                <button type="button" onclick="validateAndSave()" class="px-6 py-3 btn-primary text-white rounded-lg font-medium">
+                  <i class="fas fa-save mr-2"></i>Save Entry
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Entries Section -->
+          <div id="entries-section" class="hidden fade-in">
+            <div class="glass-card rounded-xl p-8">
+              <div class="flex justify-between items-center mb-6">
+                <div>
+                  <h3 class="text-xl font-bold">Manage Entries</h3>
+                  <p class="text-sm text-gray-400 mt-1">View, edit, and export your form entries</p>
+                </div>
+                <div class="flex space-x-3">
+                  <button onclick="exportFiltered()" class="px-4 py-2 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors">
+                    <i class="fas fa-download mr-2"></i>Export Selected
+                  </button>
+                  <button onclick="deleteSelected()" class="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors">
+                    <i class="fas fa-trash mr-2"></i>Delete Selected
+                  </button>
+                </div>
+              </div>
+
+              <!-- Filter Tabs -->
+              <div class="flex space-x-1 mb-6 bg-gray-800/50 p-1 rounded-lg">
+                <button onclick="filterEntries('all')" class="filter-tab active flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all">All</button>
+                <button onclick="filterEntries('15CA-A')" class="filter-tab flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all">15CA-A</button>
+                <button onclick="filterEntries('15CA-B')" class="filter-tab flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all">15CA-B</button>
+                <button onclick="filterEntries('15CA-C')" class="filter-tab flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all">15CA-C</button>
+                <button onclick="filterEntries('15CA-D')" class="filter-tab flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all">15CA-D</button>
+                <button onclick="filterEntries('15CB')" class="filter-tab flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all">15CB</button>
+              </div>
+
+              <!-- Enhanced Search and Actions -->
+              <div class="flex space-x-4 mb-6">
+                <div class="flex-1 search-input-wrapper">
+                  <input type="text" id="searchInput" placeholder="Search by name, PAN, email, amount, or any field..." 
+                    class="w-full form-input rounded-lg pl-10 pr-4 py-2"
+                    onkeyup="searchEntries()" onfocus="showSearchSuggestions()" onblur="hideSearchSuggestions()">
+                  <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                  <div id="searchSuggestions" class="search-suggestions"></div>
+                </div>
+                <select id="sortBy" onchange="sortEntries()" class="form-input rounded-lg px-4 py-2">
+                  <option value="date-desc">Newest First</option>
+                  <option value="date-asc">Oldest First</option>
+                  <option value="name-asc">Name A-Z</option>
+                  <option value="name-desc">Name Z-A</option>
+                  <option value="amount-desc">Amount High-Low</option>
+                  <option value="amount-asc">Amount Low-High</option>
+                </select>
+              </div>
+
+              <div id="entriesList" class="space-y-4"></div>
+            </div>
+          </div>
+
+          <!-- Bulk Import Section -->
+          <div id="bulk-section" class="hidden fade-in">
+            <div class="glass-card rounded-xl p-8">
+              <h3 class="text-xl font-bold mb-6">AI-Powered Bulk Import</h3>
+
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium mb-2">Form Type</label>
+                  <select id="bulkFormType" class="w-full form-input rounded-lg p-3">
+                    <option value="15CA-A">Form 15CA-A - Basic Remittance</option>
+                    <option value="15CA-B">Form 15CA-B - With AO Orders</option>
+                    <option value="15CA-C">Form 15CA-C - Comprehensive</option>
+                    <option value="15CA-D">Form 15CA-D - Simplified</option>
+                    <option value="15CB">Form 15CB - CA Certificate</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium mb-2">Processing Mode</label>
+                  <select id="processingMode" class="w-full form-input rounded-lg p-3">
+                    <option value="smart">Smart Detection (Auto-detect fields)</option>
+                    <option value="structured">Structured Format (CSV/JSON)</option>
+                    <option value="unstructured">Unstructured Text</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mt-6">
+                <div class="flex justify-between items-center mb-2">
+                  <label class="block text-sm font-medium">Data Input</label>
+                  <button onclick="loadSampleBulkData()" class="text-sm text-indigo-400 hover:text-indigo-300">
+                    <i class="fas fa-magic mr-1"></i>Load Sample Data
+                  </button>
+                </div>
+                <textarea id="bulkData" rows="10" class="w-full form-input rounded-lg p-3" 
+                  placeholder="Paste your data here. The AI will automatically parse and structure it..."></textarea>
+              </div>
+
+              <div class="mt-6 flex justify-end space-x-4">
+                <button onclick="clearBulkData()" class="px-6 py-3 rounded-lg bg-gray-500/20 text-gray-400 hover:bg-gray-500/30 transition-colors">
+                  <i class="fas fa-times mr-2"></i>Clear
+                </button>
+                <button onclick="processBulkImport()" class="px-6 py-3 btn-primary text-white rounded-lg font-medium">
+                  <i class="fas fa-robot mr-2"></i>Process with AI
+                </button>
+              </div>
+
+              <!-- Preview Section -->
+              <div id="bulkPreview" class="hidden mt-8">
+                <h4 class="text-lg font-semibold mb-4">Preview Parsed Data</h4>
+                <div id="bulkPreviewContent" class="glass-card rounded-lg p-4 max-h-96 overflow-y-auto"></div>
+                <div class="mt-4 flex justify-end space-x-4">
+                  <button onclick="cancelBulkImport()" class="px-6 py-3 rounded-lg bg-gray-500/20 text-gray-400 hover:bg-gray-500/30 transition-colors">
+                    Cancel
+                  </button>
+                  <button onclick="confirmBulkImport()" class="px-6 py-3 btn-primary text-white rounded-lg font-medium">
+                    <i class="fas fa-check mr-2"></i>Confirm Import
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics Section -->
+          <div id="analytics-section" class="hidden fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Remittance Volume Trends</h3>
+                <div class="chart-container">
+                  <canvas id="volumeChart"></canvas>
+                </div>
+              </div>
+
+              <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Country-wise Distribution</h3>
+                <div class="chart-container">
+                  <canvas id="countryChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+              <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Top Remitters</h3>
+                <div id="topRemitters" class="space-y-3"></div>
+              </div>
+
+              <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Nature of Remittance</h3>
+                <div class="chart-container h-64">
+                  <canvas id="natureChart"></canvas>
+                </div>
+              </div>
+
+              <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Key Metrics</h3>
+                <div class="space-y-4" id="keyMetrics"></div>
+              </div>
+            </div>
+
+            <div class="glass-card rounded-xl p-6">
+              <h3 class="text-lg font-semibold mb-4">Monthly Comparison</h3>
+              <div class="chart-container">
+                <canvas id="comparisonChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Master Data Section -->
+          <div id="master-section" class="hidden fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Bank Codes (BSR)</h3>
+                <div class="mb-4">
+                  <button onclick="addMasterData('bank')" class="px-4 py-2 rounded-lg bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Bank
+                  </button>
+                </div>
+                <div id="bankList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+              </div>
+
+              <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Nature of Remittance Codes</h3>
+                <div class="mb-4">
+                  <button onclick="addMasterData('nature')" class="px-4 py-2 rounded-lg bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Code
+                  </button>
+                </div>
+                <div id="natureList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+              </div>
+            </div>
+
+            <div class="mt-6 glass-card rounded-xl p-6">
+              <h3 class="text-lg font-semibold mb-4">System Configuration</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium mb-2">Default Currency</label>
+                  <select id="defaultCurrency" class="w-full form-input rounded-lg p-3">
+                    <option value="1">INR - Indian Rupee</option>
+                    <option value="134">USD - US Dollar</option>
+                    <option value="142">EUR - Euro</option>
+                    <option value="167">CHF - Swiss Franc</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Auto-save Interval</label>
+                  <select id="autoSaveInterval" class="w-full form-input rounded-lg p-3">
+                    <option value="0">Disabled</option>
+                    <option value="30">30 seconds</option>
+                    <option value="60">1 minute</option>
+                    <option value="300">5 minutes</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Date Format</label>
+                  <select id="dateFormat" class="w-full form-input rounded-lg p-3">
+                    <option value="DD-MM-YYYY">DD-MM-YYYY</option>
+                    <option value="MM-DD-YYYY">MM-DD-YYYY</option>
+                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Export Format</label>
+                  <select id="exportFormat" class="w-full form-input rounded-lg p-3">
+                    <option value="xml">XML Only</option>
+                    <option value="xml-json">XML + JSON</option>
+                    <option value="xml-csv">XML + CSV</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mt-6 flex justify-end">
+                <button onclick="saveConfiguration()" class="px-6 py-3 btn-primary text-white rounded-lg font-medium">
+                  <i class="fas fa-save mr-2"></i>Save Configuration
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Import/Export Section -->
+          <div id="import-export-section" class="hidden fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Export Data</h3>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Export Type</label>
+                    <select id="exportType" class="w-full form-input rounded-lg p-3">
+                      <option value="all">All Data (Complete Backup)</option>
+                      <option value="forms">Forms Only</option>
+                      <option value="master">Master Data Only</option>
+                      <option value="config">Configuration Only</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Date Range</label>
+                    <div class="grid grid-cols-2 gap-3">
+                      <input type="date" id="exportFrom" class="form-input rounded-lg p-3">
+                      <input type="date" id="exportTo" class="form-input rounded-lg p-3">
+                    </div>
+                  </div>
+                  <button onclick="exportData()" class="w-full px-6 py-3 btn-primary text-white rounded-lg font-medium">
+                    <i class="fas fa-download mr-2"></i>Export Data
+                  </button>
+                </div>
+              </div>
+
+              <div class="glass-card rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Import Data</h3>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Import Type</label>
+                    <select id="importType" class="w-full form-input rounded-lg p-3">
+                      <option value="merge">Merge with Existing</option>
+                      <option value="replace">Replace All</option>
+                      <option value="new">Import as New</option>
+                    </select>
+                  </div>
+                  <div class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
+                    <input type="file" id="importFile" accept=".json,.csv,.xml" class="hidden" onchange="handleImport(event)">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-400 mb-4">Drag and drop files here or</p>
+                    <button onclick="document.getElementById('importFile').click()" 
+                      class="px-4 py-2 rounded-lg bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 transition-colors">
+                      Browse Files
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 glass-card rounded-xl p-6">
+              <h3 class="text-lg font-semibold mb-4">Backup & Restore</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="createBackup()" class="p-4 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors text-center">
+                  <i class="fas fa-save text-2xl mb-2"></i>
+                  <p class="font-medium">Create Backup</p>
+                  <p class="text-sm mt-1">Save complete system state</p>
+                </button>
+                <button onclick="restoreBackup()" class="p-4 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors text-center">
+                  <i class="fas fa-undo text-2xl mb-2"></i>
+                  <p class="font-medium">Restore Backup</p>
+                  <p class="text-sm mt-1">Load previous state</p>
+                </button>
+                <button onclick="clearAllData()" class="p-4 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors text-center">
+                  <i class="fas fa-trash-alt text-2xl mb-2"></i>
+                  <p class="font-medium">Clear All Data</p>
+                  <p class="text-sm mt-1">Reset application</p>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Log Section -->
+          <div id="activity-section" class="hidden fade-in">
+            <div class="glass-card rounded-xl p-6">
+              <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold">Activity Log</h3>
+                <button onclick="clearActivityLog()" class="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors">
+                  <i class="fas fa-eraser mr-2"></i>Clear Log
+                </button>
+              </div>
+              <div id="activityLog" class="space-y-3 max-h-96 overflow-y-auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50">
+      <div class="glass-card rounded-xl p-8 text-center">
+        <div class="loader mx-auto mb-4"></div>
+        <p class="text-lg font-medium" id="loadingText">Processing...</p>
+        <p class="text-sm text-gray-400 mt-2" id="loadingSubtext">Please wait</p>
+      </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="fixed top-4 right-4 max-w-md glass-card rounded-lg p-4 notification z-50">
+      <div class="flex items-start">
+        <div id="notificationIcon" class="flex-shrink-0 mr-3"></div>
+        <div class="flex-1">
+          <p id="notificationTitle" class="font-medium"></p>
+          <p id="notificationMessage" class="text-sm text-gray-400 mt-1"></p>
+        </div>
+        <button onclick="hideNotification()" class="ml-3 text-gray-400 hover:text-white">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Actions Modal -->
+    <div id="quickActionsModal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50">
+      <div class="glass-card rounded-xl p-6 max-w-md w-full mx-4">
+        <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+        <div class="space-y-3">
+          <button onclick="quickAction('export-today')" class="w-full p-3 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 text-left transition-colors">
+            <i class="fas fa-download text-green-400 mr-3"></i>Export Today's Entries
+          </button>
+          <button onclick="quickAction('generate-report')" class="w-full p-3 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 text-left transition-colors">
+            <i class="fas fa-file-pdf text-red-400 mr-3"></i>Generate Monthly Report
+          </button>
+          <button onclick="quickAction('bulk-validate')" class="w-full p-3 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 text-left transition-colors">
+            <i class="fas fa-check-double text-blue-400 mr-3"></i>Validate All Entries
+          </button>
+          <button onclick="quickAction('sync-data')" class="w-full p-3 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 text-left transition-colors">
+            <i class="fas fa-sync text-purple-400 mr-3"></i>Sync with Cloud
+          </button>
+        </div>
+        <button onclick="hideQuickActions()" class="mt-4 w-full px-4 py-2 rounded-lg bg-gray-500/20 text-gray-400 hover:bg-gray-500/30 transition-colors">
+          Close
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Global Variables
+      let currentFormType = '';
+      let editingIndex = -1;
+      let formData = {
+      '15CA-A': [],
+      '15CA-B': [],
+      '15CA-C': [],
+      '15CA-D': [],
+      '15CB': []
+      };
+      let masterData = {
+      banks: [],
+      natureOfRemittance: [],
+      countries: [],
+      states: []
+      };
+      let activityLog = [];
+      let configuration = {
+      defaultCurrency: '1',
+      autoSaveInterval: '0',
+      dateFormat: 'DD-MM-YYYY',
+      exportFormat: 'xml'
+      };
+      let bulkParsedData = [];
+      let selectedEntries = new Set();
+
+      // Indian States
+      const indianStates = [
+      {code: '1', name: 'Andaman and Nicobar Islands'},
+      {code: '2', name: 'Andhra Pradesh'},
+      {code: '3', name: 'Arunachal Pradesh'},
+      {code: '4', name: 'Assam'},
+      {code: '5', name: 'Bihar'},
+      {code: '6', name: 'Chandigarh'},
+      {code: '7', name: 'Chhattisgarh'},
+      {code: '8', name: 'Dadra and Nagar Haveli'},
+      {code: '9', name: 'Daman and Diu'},
+      {code: '10', name: 'Delhi'},
+      {code: '11', name: 'Goa'},
+      {code: '12', name: 'Gujarat'},
+      {code: '13', name: 'Haryana'},
+      {code: '14', name: 'Himachal Pradesh'},
+      {code: '15', name: 'Mumbai'},
+      {code: '16', name: 'Jharkhand'},
+      {code: '17', name: 'Karnataka'},
+      {code: '18', name: 'Kerala'},
+      {code: '19', name: 'Lakshadweep'},
+      {code: '20', name: 'Madhya Pradesh'},
+      {code: '21', name: 'Maharashtra'},
+      {code: '22', name: 'Manipur'},
+      {code: '23', name: 'Meghalaya'},
+      {code: '24', name: 'Mizoram'},
+      {code: '25', name: 'Nagaland'},
+      {code: '26', name: 'Odisha'},
+      {code: '27', name: 'Puducherry'},
+      {code: '28', name: 'Punjab'},
+      {code: '29', name: 'Rajasthan'},
+      {code: '30', name: 'Sikkim'},
+      {code: '31', name: 'Tamil Nadu'},
+      {code: '32', name: 'Telangana'},
+      {code: '33', name: 'Tripura'},
+      {code: '34', name: 'Uttar Pradesh'},
+      {code: '35', name: 'Uttarakhand'},
+      {code: '36', name: 'West Bengal'}
+      ];
+
+      // Countries List
+      const countries = [
+      {code: '1', name: 'United States'},
+      {code: '41', name: 'Switzerland'},
+      {code: '91', name: 'India'},
+      {code: '44', name: 'United Kingdom'},
+      {code: '49', name: 'Germany'},
+      {code: '33', name: 'France'},
+      {code: '81', name: 'Japan'},
+      {code: '86', name: 'China'},
+      {code: '61', name: 'Australia'},
+      {code: '971', name: 'United Arab Emirates'},
+      {code: '65', name: 'Singapore'},
+      {code: '60', name: 'Malaysia'},
+      {code: '966', name: 'Saudi Arabia'},
+      {code: '82', name: 'South Korea'},
+      {code: '39', name: 'Italy'},
+      {code: '34', name: 'Spain'},
+      {code: '31', name: 'Netherlands'},
+      {code: '46', name: 'Sweden'},
+      {code: '47', name: 'Norway'},
+      {code: '45', name: 'Denmark'},
+      {code: '32', name: 'Belgium'},
+      {code: '43', name: 'Austria'},
+      {code: '351', name: 'Portugal'},
+      {code: '353', name: 'Ireland'},
+      {code: '358', name: 'Finland'},
+      {code: '48', name: 'Poland'},
+      {code: '420', name: 'Czech Republic'},
+      {code: '36', name: 'Hungary'},
+      {code: '40', name: 'Romania'},
+      {code: '30', name: 'Greece'},
+      {code: '90', name: 'Turkey'},
+      {code: '7', name: 'Russia'},
+      {code: '380', name: 'Ukraine'},
+      {code: '375', name: 'Belarus'},
+      {code: '370', name: 'Lithuania'},
+      {code: '371', name: 'Latvia'},
+      {code: '372', name: 'Estonia'},
+      {code: '359', name: 'Bulgaria'},
+      {code: '385', name: 'Croatia'},
+      {code: '386', name: 'Slovenia'},
+      {code: '381', name: 'Serbia'},
+      {code: '387', name: 'Bosnia and Herzegovina'},
+      {code: '389', name: 'Macedonia'},
+      {code: '355', name: 'Albania'},
+      {code: '383', name: 'Kosovo'},
+      {code: '382', name: 'Montenegro'},
+      {code: '373', name: 'Moldova'},
+      {code: '374', name: 'Armenia'},
+      {code: '994', name: 'Azerbaijan'},
+      {code: '995', name: 'Georgia'},
+      {code: '972', name: 'Israel'},
+      {code: '962', name: 'Jordan'},
+      {code: '961', name: 'Lebanon'},
+      {code: '963', name: 'Syria'},
+      {code: '964', name: 'Iraq'},
+      {code: '98', name: 'Iran'},
+      {code: '965', name: 'Kuwait'},
+      {code: '973', name: 'Bahrain'},
+      {code: '974', name: 'Qatar'},
+      {code: '968', name: 'Oman'},
+      {code: '967', name: 'Yemen'},
+      {code: '20', name: 'Egypt'},
+      {code: '212', name: 'Morocco'},
+      {code: '213', name: 'Algeria'},
+      {code: '216', name: 'Tunisia'},
+      {code: '218', name: 'Libya'},
+      {code: '249', name: 'Sudan'},
+      {code: '251', name: 'Ethiopia'},
+      {code: '254', name: 'Kenya'},
+      {code: '255', name: 'Tanzania'},
+      {code: '256', name: 'Uganda'},
+      {code: '234', name: 'Nigeria'},
+      {code: '233', name: 'Ghana'},
+      {code: '225', name: 'Ivory Coast'},
+      {code: '237', name: 'Cameroon'},
+      {code: '27', name: 'South Africa'},
+      {code: '263', name: 'Zimbabwe'},
+      {code: '260', name: 'Zambia'},
+      {code: '258', name: 'Mozambique'},
+      {code: '244', name: 'Angola'},
+      {code: '267', name: 'Botswana'},
+      {code: '264', name: 'Namibia'},
+      {code: '230', name: 'Mauritius'},
+      {code: '261', name: 'Madagascar'},
+      {code: '248', name: 'Seychelles'},
+      {code: '52', name: 'Mexico'},
+      {code: '55', name: 'Brazil'},
+      {code: '54', name: 'Argentina'},
+      {code: '56', name: 'Chile'},
+      {code: '57', name: 'Colombia'},
+      {code: '51', name: 'Peru'},
+      {code: '58', name: 'Venezuela'},
+      {code: '593', name: 'Ecuador'},
+      {code: '591', name: 'Bolivia'},
+      {code: '595', name: 'Paraguay'},
+      {code: '598', name: 'Uruguay'},
+      {code: '502', name: 'Guatemala'},
+      {code: '503', name: 'El Salvador'},
+      {code: '504', name: 'Honduras'},
+      {code: '505', name: 'Nicaragua'},
+      {code: '506', name: 'Costa Rica'},
+      ];
+
+      // Custom Alert System
+      function sweetAlert(options) {
+      const container = document.getElementById('sweetAlertContainer');
+      const alertId = 'alert-' + Date.now();
+
+      const iconMap = {
+      success: 'fa-check',
+      error: 'fa-times',
+      warning: 'fa-exclamation',
+      info: 'fa-info',
+      question: 'fa-question'
+      };
+
+      const alertHtml = `
+      <div id="${alertId}" class="fixed inset-0 modal-backdrop flex items-center justify-center z-[9999]">
+      <div class="sweet-alert">
+      <div class="sweet-alert-icon ${options.icon || 'info'}">
+      <i class="fas ${iconMap[options.icon] || iconMap.info}"></i>
+    </div>
+      <h3 class="sweet-alert-title">${options.title || 'Alert'}</h3>
+      <p class="sweet-alert-text">${options.text || ''}</p>
+      <div class="sweet-alert-buttons">
+      ${options.showCancelButton ? '<button class="sweet-alert-button cancel" onclick="closeSweetAlert(\'' + alertId + '\', false)">Cancel</button>' : ''}
+      <button class="sweet-alert-button confirm" onclick="closeSweetAlert('${alertId}', true)">${options.confirmButtonText || 'OK'}</button>
+    </div>
+    </div>
+    </div>
+      `;
+
+      container.insertAdjacentHTML('beforeend', alertHtml);
+
+      // Show animation
+      setTimeout(() => {
+      const alert = document.getElementById(alertId);
+      if (alert) {
+      alert.querySelector('.sweet-alert').classList.add('show');
+      }
+      }, 10);
+
+      // Store callback
+      window['sweetAlertCallback_' + alertId] = options.callback;
+      }
+
+      function closeSweetAlert(alertId, confirmed) {
+      const alert = document.getElementById(alertId);
+      if (alert) {
+      const sweetAlert = alert.querySelector('.sweet-alert');
+      sweetAlert.classList.remove('show');
+
+      setTimeout(() => {
+      alert.remove();
+      const callback = window['sweetAlertCallback_' + alertId];
+      if (callback && confirmed) {
+      callback();
+      }
+      delete window['sweetAlertCallback_' + alertId];
+      }, 300);
+      }
+      }
+
+      // Initialize Application
+      function initApp() {
+      loadData();
+      initCharts();
+      setupEventListeners();
+      updateStorage();
+      loadMasterData();
+      loadConfiguration();
+      logActivity('Application initialized');
+      }
+
+      // Load data from localStorage
+      function loadData() {
+      const saved = localStorage.getItem('form15ca_data');
+      if (saved) {
+      formData = JSON.parse(saved);
+      }
+      updateCounts();
+      updateRecentActivity();
+      }
+
+      // Save data to localStorage
+      function saveData() {
+      localStorage.setItem('form15ca_data', JSON.stringify(formData));
+      updateCounts();
+      updateRecentActivity();
+      updateStorage();
+      }
+
+      // Load master data
+      function loadMasterData() {
+      const saved = localStorage.getItem('form15ca_master');
+      if (saved) {
+      masterData = JSON.parse(saved);
+      } else {
+      // Initialize with comprehensive default data based on actual Indian tax forms
+      masterData.banks = [
+      // Major Public Sector Banks
+      {code: '0101101', name: 'State Bank of India - Main Branch'},
+      {code: '0101543', name: 'State Bank of India - Corporate Branch'},
+      {code: '0295073', name: 'Bank of Baroda'},
+      {code: '0210002', name: 'Punjab National Bank'},
+      {code: '0240532', name: 'Bank of India'},
+      {code: '0380010', name: 'Canara Bank'},
+      {code: '0330001', name: 'Union Bank of India'},
+      {code: '0360003', name: 'Indian Bank'},
+      {code: '0361001', name: 'Indian Overseas Bank'},
+      {code: '0341514', name: 'Central Bank of India'},
+      {code: '0571021', name: 'Bank of Maharashtra'},
+      {code: '0611042', name: 'UCO Bank'},
+
+      // Major Private Banks
+      {code: '9001101', name: 'HDFC Bank - Main Branch'},
+      {code: '9001543', name: 'HDFC Bank - Corporate Branch'},
+      {code: '9010101', name: 'ICICI Bank - Main Branch'},
+      {code: '9010543', name: 'ICICI Bank - Corporate Branch'},
+      {code: '9004101', name: 'Axis Bank - Main Branch'},
+      {code: '9004543', name: 'Axis Bank - Corporate Branch'},
+      {code: '9171001', name: 'Kotak Mahindra Bank'},
+      {code: '9089001', name: 'IDBI Bank'},
+      {code: '9250001', name: 'Yes Bank'},
+      {code: '9266001', name: 'IndusInd Bank'},
+      {code: '2013001', name: 'Federal Bank'},
+      {code: '2011001', name: 'South Indian Bank'},
+      {code: '2004001', name: 'City Union Bank'},
+      {code: '2054001', name: 'Karur Vysya Bank'},
+      {code: '2031001', name: 'Karnataka Bank'},
+      {code: '2020001', name: 'Dhanlaxmi Bank'},
+      {code: '2047001', name: 'Jammu & Kashmir Bank'},
+
+      // Foreign Banks
+      {code: '5101547', name: 'Citibank N.A.'},
+      {code: '5021537', name: 'Standard Chartered Bank'},
+      {code: '5041001', name: 'HSBC'},
+      {code: '5061001', name: 'Deutsche Bank'},
+      {code: '5081001', name: 'DBS Bank'},
+      {code: '5071001', name: 'Barclays Bank'},
+      {code: '5034001', name: 'Bank of America'},
+      {code: '5013001', name: 'American Express Banking Corp'},
+      {code: '5097001', name: 'BNP Paribas'},
+      {code: '5083001', name: 'JP Morgan Chase Bank'}
+      ];
+
+      masterData.natureOfRemittance = [
+      // Interest
+      {code: '16.1', name: 'Interest'},
+      {code: '16.1.1', name: 'Interest on Loans'},
+      {code: '16.1.2', name: 'Interest on Debt Securities'},
+      {code: '16.1.3', name: 'Interest on Bank Deposits'},
+
+      // Dividend
+      {code: '16.3', name: 'Dividend'},
+      {code: '16.3.1', name: 'Dividend on Equity Shares'},
+      {code: '16.3.2', name: 'Dividend on Preference Shares'},
+
+      // Royalty and Fees for Technical Services
+      {code: '16.5', name: 'Royalty'},
+      {code: '16.5.1', name: 'Royalty for Use of Patents'},
+      {code: '16.5.2', name: 'Royalty for Use of Trademarks'},
+      {code: '16.5.3', name: 'Royalty for Use of Copyrights'},
+      {code: '16.5.4', name: 'Royalty for Use of Industrial Designs'},
+      {code: '16.5.5', name: 'Royalty for Transfer of Technology'},
+
+      {code: '16.6', name: 'Fees for Technical Services'},
+      {code: '16.6.1', name: 'Consultancy Services'},
+      {code: '16.6.2', name: 'Technical Know-how'},
+      {code: '16.6.3', name: 'Engineering Services'},
+      {code: '16.6.4', name: 'Managerial Services'},
+
+      // Salary
+      {code: '16.7', name: 'Salary'},
+      {code: '16.7.1', name: 'Salary - Employment'},
+      {code: '16.7.2', name: 'Director Remuneration'},
+      {code: '16.7.3', name: 'Consultancy Fees to Individuals'},
+
+      // Capital Gains
+      {code: '16.8', name: 'Capital Gains'},
+      {code: '16.8.1', name: 'Long Term Capital Gains'},
+      {code: '16.8.2', name: 'Short Term Capital Gains'},
+      {code: '16.8.3', name: 'Capital Gains on Transfer of Shares'},
+      {code: '16.8.4', name: 'Capital Gains on Immovable Property'},
+
+      // Professional Services
+      {code: '16.9', name: 'Professional Services'},
+      {code: '16.9.1', name: 'Legal Services'},
+      {code: '16.9.2', name: 'Accounting Services'},
+      {code: '16.9.3', name: 'Medical Services'},
+      {code: '16.9.4', name: 'Architectural Services'},
+
+      // Commission
+      {code: '16.10', name: 'Commission'},
+      {code: '16.10.1', name: 'Commission on Sales'},
+      {code: '16.10.2', name: 'Brokerage'},
+      {code: '16.10.3', name: 'Agency Commission'},
+
+      // Rent
+      {code: '16.11', name: 'Rent'},
+      {code: '16.11.1', name: 'Rent on Immovable Property'},
+      {code: '16.11.2', name: 'Rent on Machinery/Equipment'},
+      {code: '16.11.3', name: 'Lease Rentals'},
+
+      // Other Income
+      {code: '16.99', name: 'Others'},
+      {code: '16.99.1', name: 'Advertisement'},
+      {code: '16.99.2', name: 'Broadcasting'},
+      {code: '16.99.3', name: 'Telecasting'},
+      {code: '16.99.4', name: 'Use of Software'},
+      {code: '16.99.5', name: 'Use of News Agency Services'},
+      {code: '16.99.6', name: 'Training Fees'},
+      {code: '16.99.7', name: 'Reimbursement of Expenses'},
+      {code: '16.99.8', name: 'Any Other Income'}
+      ];
+
+      masterData.countries = countries;
+      masterData.states = indianStates;
+      saveMasterData();
+      }
+      }
+
+      // Save master data
+      function saveMasterData() {
+      localStorage.setItem('form15ca_master', JSON.stringify(masterData));
+      }
+
+      // Load configuration
+      function loadConfiguration() {
+      const saved = localStorage.getItem('form15ca_config');
+      if (saved) {
+      configuration = JSON.parse(saved);
+      applyConfiguration();
+      }
+      }
+
+      // Save configuration
+      function saveConfiguration() {
+      configuration.defaultCurrency = document.getElementById('defaultCurrency').value;
+      configuration.autoSaveInterval = document.getElementById('autoSaveInterval').value;
+      configuration.dateFormat = document.getElementById('dateFormat').value;
+      configuration.exportFormat = document.getElementById('exportFormat').value;
+
+      localStorage.setItem('form15ca_config', JSON.stringify(configuration));
+      applyConfiguration();
+      showNotification('Success', 'Configuration saved successfully', 'success');
+      logActivity('Configuration updated');
+      }
+
+      // Apply configuration
+      function applyConfiguration() {
+      document.getElementById('defaultCurrency').value = configuration.defaultCurrency;
+      document.getElementById('autoSaveInterval').value = configuration.autoSaveInterval;
+      document.getElementById('dateFormat').value = configuration.dateFormat;
+      document.getElementById('exportFormat').value = configuration.exportFormat;
+      }
+
+      // Update counts
+      function updateCounts() {
+      Object.keys(formData).forEach(type => {
+      const count = formData[type].length;
+      const element = document.getElementById('count-' + type);
+      if (element) {
+      element.textContent = count;
+      }
+      });
+      updateCharts();
+      }
+
+      // Enhanced storage calculation
+      function updateStorage() {
+      let totalSize = 0;
+
+      // Calculate size of all localStorage items
+      for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) {
+      totalSize += localStorage[key].length + key.length;
+      }
+      }
+
+      // Convert to KB/MB
+      const sizeKB = (totalSize / 1024).toFixed(2);
+      const sizeMB = (totalSize / 1024 / 1024).toFixed(2);
+
+      // Estimate available storage (10MB default limit)
+      const limitMB = 10;
+      const percentage = Math.min((sizeMB / limitMB) * 100, 100);
+
+      document.getElementById('storageBar').style.width = percentage + '%';
+
+      if (sizeMB < 1) {
+      document.getElementById('storageText').textContent = sizeKB + ' KB';
+      } else {
+      document.getElementById('storageText').textContent = sizeMB + ' MB';
+      }
+
+      document.getElementById('storageLimit').textContent = limitMB + ' MB';
+
+      // Change color based on usage
+      const storageBar = document.getElementById('storageBar');
+      if (percentage > 90) {
+      storageBar.style.background = 'var(--danger-gradient)';
+      } else if (percentage > 70) {
+      storageBar.style.background = 'var(--warning-gradient)';
+      } else {
+      storageBar.style.background = 'var(--primary-gradient)';
+      }
+      }
+
+      // Show section
+      function showSection(section) {
+      // Hide all sections
+      document.querySelectorAll('[id$="-section"]').forEach(el => el.classList.add('hidden'));
+      document.getElementById('form-container').classList.add('hidden');
+
+      // Show selected section
+      const sectionEl = document.getElementById(section + '-section');
+      if (sectionEl) {
+      sectionEl.classList.remove('hidden');
+      }
+
+      // Update sidebar active state
+      document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+      event.target.closest('.sidebar-item').classList.add('active');
+
+      // Update title
+      const titles = {
+      'dashboard': 'Dashboard',
+      'forms': 'Create Form',
+      'entries': 'Manage Entries',
+      'bulk': 'AI Bulk Import',
+      'analytics': 'Analytics',
+      'master': 'Master Data',
+      'import-export': 'Import/Export',
+      'activity': 'Activity Log'
+      };
+
+      const subtitles = {
+      'dashboard': 'Overview of your tax forms',
+      'forms': 'Select a form type to create new entry',
+      'entries': 'View, edit, and manage all form entries',
+      'bulk': 'Import multiple forms using AI',
+      'analytics': 'Insights and trends from your data',
+      'master': 'Manage reference data and configuration',
+      'import-export': 'Backup and restore your data',
+      'activity': 'Track all system activities'
+      };
+
+      document.getElementById('sectionTitle').textContent = titles[section] || 'Form 15CA/15CB';
+      document.getElementById('sectionSubtitle').textContent = subtitles[section] || '';
+
+      // Special handling for analytics
+      if (section === 'analytics') {
+      updateAnalytics();
+      }
+
+      // Special handling for master data
+      if (section === 'master') {
+      displayMasterData();
+      }
+
+      // Special handling for activity log
+      if (section === 'activity') {
+      displayActivityLog();
+      }
+
+      // Special handling for entries
+      if (section === 'entries') {
+      filterEntries('all');
+      }
+      }
+
+      // Show form
+      function showForm(type) {
+      currentFormType = type;
+      document.getElementById('forms-section').classList.add('hidden');
+      document.getElementById('form-container').classList.remove('hidden');
+      document.getElementById('formTitle').textContent = 'Form ' + type;
+      generateForm(type);
+      logActivity('Opened form ' + type);
+      }
+
+      // Generate form fields
+      function generateForm(type) {
+      const form = document.getElementById('dataForm');
+      let html = '';
+
+      // Common fields for all forms
+      html += '<div class="form-section pl-4">';
+      html += '<h4 class="text-lg font-semibold mb-4">Remitter Details</h4>';
+      html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">';
+
+      html += createInput('remitterName', 'Remitter Name *', 'text', true);
+      html += createInput('remitterPAN', 'PAN *', 'text', true, '[A-Z]{5}[0-9]{4}[A-Z]{1}');
+      html += createInput('remitterTAN', 'TAN *', 'text', true);
+      html += createInput('remitterEmail', 'Email *', 'email', true);
+      html += createInput('remitterPhone', 'Phone *', 'tel', true);
+      html += createInput('remitterBuilding', 'Building/Premises', 'text');
+      html += createInput('remitterCity', 'City/District *', 'text', true);
+      html += createInput('remitterPincode', 'Pincode *', 'text', true, '[0-9]{6}');
+      html += createSelect('remitterState', 'State *', indianStates, true);
+      html += createInput('remitterArea', 'Area/Locality', 'text');
+
+      html += '</div></div>';
+
+      // Remittee Details
+      html += '<div class="form-section pl-4 mt-8">';
+      html += '<h4 class="text-lg font-semibold mb-4">Remittee Details</h4>';
+      html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">';
+
+      html += createInput('remitteeName', 'Remittee Name *', 'text', true);
+      if (type !== '15CA-D') {
+      html += createInput('remitteePAN', 'Remittee PAN', 'text');
+      }
+      html += createInput('remitteeBuilding', 'Building/Premises', 'text');
+      html += createInput('remitteeCity', 'City/District *', 'text', true);
+      html += createInput('remitteeState', 'State *', 'text', true);
+      html += createSelect('remitteeCountry', 'Country *', countries, true);
+      html += createInput('remitteeZipCode', 'Zip Code', 'text');
+      html += createInput('remitteeEmail', 'Email', 'email');
+
+      html += '</div></div>';
+
+      // Remittance Details
+      html += '<div class="form-section pl-4 mt-8">';
+      html += '<h4 class="text-lg font-semibold mb-4">Remittance Details</h4>';
+      html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">';
+
+      if (type === '15CA-A') {
+      html += createInput('amtPayBefTds', 'Amount Payable Before TDS *', 'number', true, null, '0.01');
+      html += createInput('aggAmtRem', 'Aggregate Amount Remitted *', 'number', true, null, '0.01');
+      html += createInput('rateofTDS', 'TDS Rate % *', 'number', true, null, '0.01');
+      html += createInput('amtTaxDeductn', 'Amount of Tax Deduction *', 'number', true, null, '0.01');
+      html += createInput('dateOfDeductn', 'Date of Deduction *', 'date', true);
+      html += createInput('revPurCategory', 'Revenue Purpose Category *', 'text', true);
+      html += createInput('revPurCode', 'Revenue Purpose Code *', 'text', true);
+      }
+
+      html += createSelect('nameBankCode', 'Bank Code (BSR) *', masterData.banks, true);
+      html += createInput('branchName', 'Branch Name *', 'text', true);
+      html += createInput('propDateRem', 'Proposed Date of Remittance *', 'date', true);
+      html += createSelect('natureRemCategory', 'Nature of Remittance Category *', masterData.natureOfRemittance, true);
+
+      if (type === '15CA-B' || type === '15CA-C' || type === '15CA-D') {
+      html += createInput('bsrCode', 'BSR Code', 'text');
+      const currencies = [
+      {code: '1', name: 'INR - Indian Rupee'},
+      {code: '134', name: 'USD - US Dollar'},
+      {code: '142', name: 'EUR - Euro'},
+      {code: '167', name: 'CHF - Swiss Franc'}
+      ];
+      html += createSelect('currencySecbCode', 'Currency Code', currencies);
+      html += createInput('amtPayForgnRem', 'Amount in Foreign Currency', 'number', false, null, '0.01');
+      html += createInput('amtPayIndRem', 'Amount in Indian Currency', 'number', false, null, '0.01');
+      html += createInput('natureRemCode', 'Nature of Remittance Code', 'text');
+      }
+
+      html += '</div></div>';
+
+      // Type-specific sections
+      if (type === '15CA-B') {
+      html += '<div class="form-section pl-4 mt-8">';
+      html += '<h4 class="text-lg font-semibold mb-4">AO Order Details</h4>';
+      html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">';
+      html += createSelect('certSection', 'Certificate Section *', [{code: '1', name: 'Section 1'}, {code: '2', name: 'Section 2'}], true);
+      html += createInput('nameAo', 'AO Name *', 'text', true);
+      html += createInput('desgAo', 'AO Designation *', 'text', true);
+      html += createInput('orderDateAo', 'Order Date *', 'date', true);
+      html += createInput('orderNumAo', 'Order Number *', 'text', true);
+      html += '</div></div>';
+      }
+
+      if (type === '15CA-C' || type === '15CB') {
+      html += '<div class="form-section pl-4 mt-8">';
+      html += '<h4 class="text-lg font-semibold mb-4">Accountant Details</h4>';
+      html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">';
+      html += createInput('nameAcctnt', 'Accountant Name *', 'text', true);
+      html += createInput('nameFirmAcctnt', 'Firm Name *', 'text', true);
+      html += createInput('membershipNumber', 'Membership Number *', 'text', true);
+      html += createInput('certDate', 'Certificate Date', 'date');
+      html += createInput('certNumber', 'Certificate Number', 'text');
+      html += createInput('acctntBuilding', 'Accountant Building', 'text');
+      html += createInput('acctntCity', 'Accountant City *', 'text', true);
+      html += createInput('acctntPincode', 'Accountant Pincode', 'text');
+      html += '</div></div>';
+      }
+
+      // Declaration
+      html += '<div class="form-section pl-4 mt-8">';
+      html += '<h4 class="text-lg font-semibold mb-4">Declaration</h4>';
+      html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">';
+      html += createInput('landlordName', 'Landlord Name', 'text');
+      html += createInput('styledName', 'Styled Name *', 'text', true);
+      html += createInput('verificationDate', 'Verification Date *', 'date', true);
+      html += createInput('verDesignation', 'Designation *', 'text', true);
+      html += createInput('verificationPlace', 'Verification Place *', 'text', true);
+      html += '</div></div>';
+
+      form.innerHTML = html;
+
+      // If editing, populate form
+      if (editingIndex >= 0) {
+      const data = formData[currentFormType][editingIndex];
+      Object.keys(data).forEach(key => {
+      const input = form.querySelector('[name="' + key + '"]');
+      if (input) {
+      input.value = data[key] || '';
+      }
+      });
+      }
+      }
+
+      // Create input field
+      function createInput(name, label, type, required = false, pattern = null, step = null) {
+      return '<div>' +
+      '<label class="block text-sm font-medium mb-2">' + label + '</label>' +
+      '<input type="' + type + '" name="' + name + '" ' +
+      'class="w-full form-input rounded-lg p-3" ' +
+      (required ? 'required ' : '') +
+      (pattern ? 'pattern="' + pattern + '" ' : '') +
+      (step ? 'step="' + step + '" ' : '') +
+      '>' +
+      '</div>';
+      }
+
+      // Create select field
+      function createSelect(name, label, options, required = false) {
+      let html = '<div>' +
+      '<label class="block text-sm font-medium mb-2">' + label + '</label>' +
+      '<select name="' + name + '" class="w-full form-input rounded-lg p-3" ' +
+      (required ? 'required' : '') + '>' +
+      '<option value="">Select...</option>';
+
+      options.forEach(opt => {
+      html += '<option value="' + opt.code + '">' + opt.name + '</option>';
+      });
+
+      html += '</select></div>';
+      return html;
+      }
+
+      // Fill sample data
+      function fillSampleData() {
+      const sampleData = {
+      '15CA-A': {
+      remitterName: 'ABC Corporation Ltd',
+      remitterPAN: 'ABCDE1234F',
+      remitterTAN: 'ABCD12345E',
+      remitterEmail: 'finance@abccorp.com',
+      remitterPhone: '9876543210',
+      remitterBuilding: 'Tower A, Business Park',
+      remitterCity: 'Mumbai',
+      remitterPincode: '400001',
+      remitterState: '15',
+      remitterArea: 'Nariman Point',
+      remitteeName: 'XYZ International Inc',
+      remitteePAN: 'XYZAB5678G',
+      remitteeBuilding: '123 Main Street',
+      remitteeCity: 'Zurich',
+      remitteeState: 'Zurich',
+      remitteeCountry: '41',
+      remitteeZipCode: '8001',
+      remitteeEmail: 'accounts@xyzintl.com',
+      amtPayBefTds: '100000',
+      aggAmtRem: '90000',
+      rateofTDS: '10',
+      amtTaxDeductn: '10000',
+      dateOfDeductn: '2024-12-01',
+      revPurCategory: 'RB-0.8',
+      revPurCode: 'RB-0.1-S0026',
+      nameBankCode: '9001101',
+      branchName: 'Fort Branch, Mumbai',
+      propDateRem: '2024-12-15',
+      natureRemCategory: '16.1',
+      landlordName: 'Property Holdings Ltd',
+      styledName: 'John Doe',
+      verificationDate: '2024-12-10',
+      verDesignation: 'Director',
+      verificationPlace: 'Mumbai'
+      },
+      '15CA-B': {
+      remitterName: 'DEF Industries Pvt Ltd',
+      remitterPAN: 'DEFGH5678I',
+      remitterTAN: 'DEFG56789J',
+      remitterEmail: 'accounts@defindustries.com',
+      remitterPhone: '9988776655',
+      remitterBuilding: 'Industrial Complex B',
+      remitterCity: 'Pune',
+      remitterPincode: '411001',
+      remitterState: '21',
+      remitterArea: 'Hinjewadi',
+      remitteeName: 'Global Tech Solutions',
+      remitteeBuilding: '456 Tech Avenue',
+      remitteeCity: 'New York',
+      remitteeState: 'NY',
+      remitteeCountry: '1',
+      remitteeZipCode: '10001',
+      remitteeEmail: 'billing@globaltech.com',
+      nameBankCode: '9010101',
+      branchName: 'Main Branch, Pune',
+      propDateRem: '2024-12-20',
+      natureRemCategory: '16.6.1',
+      bsrCode: '5101547',
+      currencySecbCode: '134',
+      amtPayForgnRem: '50000',
+      amtPayIndRem: '4150000',
+      natureRemCode: 'Software Development Services',
+      certSection: '1',
+      nameAo: 'Rajesh Kumar',
+      desgAo: 'ITO',
+      orderDateAo: '2024-11-15',
+      orderNumAo: 'ITO/MUM/2024/1234',
+      landlordName: 'Commercial Estates',
+      styledName: 'Jane Smith',
+      verificationDate: '2024-12-10',
+      verDesignation: 'CFO',
+      verificationPlace: 'Pune'
+      },
+      '15CA-C': {
+      remitterName: 'GHI Consulting Services',
+      remitterPAN: 'GHIJK9012L',
+      remitterTAN: 'GHIJ90123M',
+      remitterEmail: 'finance@ghiconsulting.com',
+      remitterPhone: '9123456789',
+      remitterBuilding: 'Consulting Tower',
+      remitterCity: 'Bangalore',
+      remitterPincode: '560001',
+      remitterState: '17',
+      remitterArea: 'Electronic City',
+      remitteeName: 'European Consulting Group',
+      remitteePAN: 'EUPAN1234N',
+      remitteeBuilding: '789 Business Center',
+      remitteeCity: 'London',
+      remitteeState: 'Greater London',
+      remitteeCountry: '44',
+      remitteeZipCode: 'EC1A 1BB',
+      remitteeEmail: 'payments@euconsulting.eu',
+      nameBankCode: '0101101',
+      branchName: 'Tech Park Branch, Bangalore',
+      propDateRem: '2024-12-25',
+      natureRemCategory: '16.9.1',
+      bsrCode: '0101543',
+      currencySecbCode: '142',
+      amtPayForgnRem: '75000',
+      amtPayIndRem: '6975000',
+      natureRemCode: 'Professional Consulting Fees',
+      nameAcctnt: 'CA Sharma & Associates',
+      nameFirmAcctnt: 'Sharma & Co',
+      membershipNumber: '123456',
+      certDate: '2024-12-05',
+      certNumber: 'CERT/2024/5678',
+      acctntBuilding: 'CA Building',
+      acctntCity: 'Bangalore',
+      acctntPincode: '560002',
+      landlordName: 'Tech Properties',
+      styledName: 'Robert Johnson',
+      verificationDate: '2024-12-10',
+      verDesignation: 'Managing Director',
+      verificationPlace: 'Bangalore'
+      },
+      '15CA-D': {
+      remitterName: 'JKL Exports Ltd',
+      remitterPAN: 'JKLMN3456O',
+      remitterTAN: 'JKLM34567P',
+      remitterEmail: 'exports@jklexports.com',
+      remitterPhone: '9876501234',
+      remitterBuilding: 'Export House',
+      remitterCity: 'Chennai',
+      remitterPincode: '600001',
+      remitterState: '31',
+      remitterArea: 'T. Nagar',
+      remitteeName: 'Asian Trading Company',
+      remitteeBuilding: '321 Trade Center',
+      remitteeCity: 'Singapore',
+      remitteeState: 'Singapore',
+      remitteeCountry: '65',
+      remitteeZipCode: '049909',
+      remitteeEmail: 'trade@asiantrading.sg',
+      nameBankCode: '9004101',
+      branchName: 'Commercial Branch, Chennai',
+      propDateRem: '2024-12-30',
+      natureRemCategory: '16.10.1',
+      bsrCode: '5101547',
+      currencySecbCode: '134',
+      amtPayForgnRem: '25000',
+      amtPayIndRem: '2075000',
+      natureRemCode: 'Export Commission',
+      landlordName: 'Export Zone Authority',
+      styledName: 'Sarah Williams',
+      verificationDate: '2024-12-10',
+      verDesignation: 'Export Manager',
+      verificationPlace: 'Chennai'
+      },
+      '15CB': {
+      remitterName: 'MNO Financial Services',
+      remitterPAN: 'MNOPQ7890R',
+      remitterTAN: 'MNOP78901S',
+      remitterEmail: 'compliance@mnofinancial.com',
+      remitterPhone: '9012345678',
+      remitterBuilding: 'Financial Tower',
+      remitterCity: 'Delhi',
+      remitterPincode: '110001',
+      remitterState: '10',
+      remitterArea: 'Connaught Place',
+      remitteeName: 'International Investment Fund',
+      remitteeBuilding: '555 Finance Street',
+      remitteeCity: 'Dubai',
+      remitteeState: 'Dubai',
+      remitteeCountry: '971',
+      remitteeZipCode: '00000',
+      remitteeEmail: 'fund@iif.ae',
+      nameBankCode: '9171001',
+      branchName: 'Central Branch, Delhi',
+      propDateRem: '2024-12-31',
+      natureRemCategory: '16.1.2',
+      nameAcctnt: 'CA Patel & Partners',
+      nameFirmAcctnt: 'Patel & Co',
+      membershipNumber: '789012',
+      certDate: '2024-12-08',
+      certNumber: 'CB/2024/9012',
+      acctntBuilding: 'Professional Plaza',
+      acctntCity: 'Delhi',
+      acctntPincode: '110002',
+      landlordName: 'Capital Properties',
+      styledName: 'Michael Brown',
+      verificationDate: '2024-12-10',
+      verDesignation: 'Finance Director',
+      verificationPlace: 'Delhi'
+      }
+      };
+
+      const data = sampleData[currentFormType];
+      if (data) {
+      Object.keys(data).forEach(key => {
+      const input = document.querySelector('[name="' + key + '"]');
+      if (input) {
+      input.value = data[key];
+      }
+      });
+      showNotification('Success', 'Sample data filled', 'success');
+      }
+      }
+
+      // Clear form
+      function clearForm() {
+      document.getElementById('dataForm').reset();
+      showNotification('Info', 'Form cleared', 'info');
+      }
+
+      // Validate and save form
+      function validateAndSave() {
+      const form = document.getElementById('dataForm');
+      if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+      }
+
+      const formData_ = new FormData(form);
+      const data = {};
+
+      for (let [key, value] of formData_.entries()) {
+      data[key] = value;
+      }
+
+      data.createdAt = new Date().toISOString();
+      data.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+
+      if (editingIndex >= 0) {
+      formData[currentFormType][editingIndex] = data;
+      showNotification('Success', 'Entry updated successfully', 'success');
+      logActivity('Updated ' + currentFormType + ' entry');
+      } else {
+      formData[currentFormType].push(data);
+      showNotification('Success', 'Entry saved successfully', 'success');
+      logActivity('Created new ' + currentFormType + ' entry');
+      }
+
+      saveData();
+      showSection('entries');
+      editingIndex = -1;
+      }
+
+      // Filter entries
+      function filterEntries(type) {
+      const tabs = document.querySelectorAll('.filter-tab');
+      tabs.forEach(tab => {
+      tab.classList.remove('active', 'bg-indigo-600', 'text-white');
+      tab.classList.add('text-gray-400');
+      });
+
+      const activeTab = Array.from(tabs).find(tab => 
+      tab.textContent.toLowerCase() === type.toLowerCase() || 
+      (type === 'all' && tab.textContent === 'All')
+      );
+      if (activeTab) {
+      activeTab.classList.add('active', 'bg-indigo-600', 'text-white');
+      activeTab.classList.remove('text-gray-400');
+      }
+
+      displayEntries(type);
+      }
+
+      // Display entries with enhanced styling
+      function displayEntries(filterType = 'all') {
+      const container = document.getElementById('entriesList');
+      let entries = [];
+
+      if (filterType === 'all') {
+      Object.keys(formData).forEach(formType => {
+      formData[formType].forEach((entry, index) => {
+      entries.push({...entry, type: formType, index});
+      });
+      });
+      } else {
+      formData[filterType].forEach((entry, index) => {
+      entries.push({...entry, type: filterType, index});
+      });
+      }
+
+      // Apply search filter
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      if (searchTerm) {
+      entries = entries.filter(entry => 
+      Object.values(entry).some(value => 
+      String(value).toLowerCase().includes(searchTerm)
+      )
+      );
+      }
+
+      // Apply sorting
+      const sortBy = document.getElementById('sortBy').value;
+      entries.sort((a, b) => {
+      switch(sortBy) {
+      case 'date-desc': return new Date(b.createdAt) - new Date(a.createdAt);
+      case 'date-asc': return new Date(a.createdAt) - new Date(b.createdAt);
+      case 'name-asc': return (a.remitterName || '').localeCompare(b.remitterName || '');
+      case 'name-desc': return (b.remitterName || '').localeCompare(a.remitterName || '');
+      case 'amount-desc': return (parseFloat(b.amtPayIndRem || b.amtPayBefTds || 0) - parseFloat(a.amtPayIndRem || a.amtPayBefTds || 0));
+      case 'amount-asc': return (parseFloat(a.amtPayIndRem || a.amtPayBefTds || 0) - parseFloat(b.amtPayIndRem || b.amtPayBefTds || 0));
+      default: return 0;
+      }
+      });
+
+      if (entries.length === 0) {
+      container.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fas fa-inbox text-4xl mb-4"></i><p>No entries found</p></div>';
+      return;
+      }
+
+      container.innerHTML = entries.map(entry => {
+      const amount = entry.amtPayBefTds || entry.amtPayIndRem || 'N/A';
+      const isSelected = selectedEntries.has(entry.type + '-' + entry.index);
+
+      return '<div class="glass-card rounded-lg p-4 table-row" data-type="' + entry.type + '" data-index="' + entry.index + '">' +
+      '<div class="flex items-start space-x-4">' +
+      '<input type="checkbox" class="mt-1 entry-checkbox" ' + (isSelected ? 'checked' : '') + ' onchange="toggleSelection(\'' + entry.type + '\', ' + entry.index + ')">' +
+      '<div class="flex-1">' +
+      '<div class="flex items-center justify-between mb-2">' +
+      '<div class="flex items-center space-x-3">' +
+      '<span class="badge bg-indigo-500/20 text-indigo-400">' + entry.type + '</span>' +
+      '<h4 class="font-medium text-white">' + (entry.remitterName || 'Unnamed') + '</h4>' +
+      '</div>' +
+      '<div class="flex space-x-2">' +
+      '<button onclick="editEntry(\'' + entry.type + '\', ' + entry.index + ')" class="p-2 rounded-lg hover:bg-white/10 text-blue-400 transition-colors">' +
+      '<i class="fas fa-edit"></i>' +
+      '</button>' +
+      '<button onclick="exportSingle(\'' + entry.type + '\', ' + entry.index + ')" class="p-2 rounded-lg hover:bg-white/10 text-green-400 transition-colors">' +
+      '<i class="fas fa-download"></i>' +
+      '</button>' +
+      '<button onclick="duplicateEntry(\'' + entry.type + '\', ' + entry.index + ')" class="p-2 rounded-lg hover:bg-white/10 text-purple-400 transition-colors">' +
+      '<i class="fas fa-copy"></i>' +
+      '</button>' +
+      '<button onclick="deleteEntry(\'' + entry.type + '\', ' + entry.index + ')" class="p-2 rounded-lg hover:bg-white/10 text-red-400 transition-colors">' +
+      '<i class="fas fa-trash"></i>' +
+      '</button>' +
+      '</div>' +
+      '</div>' +
+      '<div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">' +
+      '<div><span class="text-label">Remittee:</span> <span class="text-value">' + (entry.remitteeName || 'N/A') + '</span></div>' +
+      '<div><span class="text-label">Amount:</span> <span class="text-value">' + amount + '</span></div>' +
+      '<div><span class="text-label">Date:</span> <span class="text-value">' + (entry.propDateRem || 'N/A') + '</span></div>' +
+      '<div><span class="text-label">Created:</span> <span class="text-value">' + formatDate(entry.createdAt) + '</span></div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+      }).join('');
+      }
+
+      // Toggle selection
+      function toggleSelection(type, index) {
+      const key = type + '-' + index;
+      if (selectedEntries.has(key)) {
+      selectedEntries.delete(key);
+      } else {
+      selectedEntries.add(key);
+      }
+      }
+
+      // Enhanced search functionality
+      function searchEntries() {
+      const activeTab = document.querySelector('.filter-tab.active');
+      const filterType = activeTab.textContent.toLowerCase() === 'all' ? 'all' : activeTab.textContent;
+      displayEntries(filterType);
+      }
+
+      // Show search suggestions
+      function showSearchSuggestions() {
+      const searchInput = document.getElementById('searchInput');
+      const suggestionsContainer = document.getElementById('searchSuggestions');
+      const searchTerm = searchInput.value.toLowerCase();
+
+      if (searchTerm.length < 2) {
+      suggestionsContainer.classList.remove('show');
+      return;
+      }
+
+      // Collect unique values from all entries
+      const suggestions = new Set();
+      Object.values(formData).forEach(formType => {
+      formType.forEach(entry => {
+      Object.values(entry).forEach(value => {
+      if (String(value).toLowerCase().includes(searchTerm)) {
+      suggestions.add(String(value));
+      }
+      });
+      });
+      });
+
+      const suggestionArray = Array.from(suggestions).slice(0, 10);
+
+      if (suggestionArray.length > 0) {
+      suggestionsContainer.innerHTML = suggestionArray.map(suggestion => {
+      const highlightedText = suggestion.replace(new RegExp(searchTerm, 'gi'), match => 
+      '<span class="search-highlight">' + match + '</span>'
+      );
+      return '<div class="search-suggestion-item" onclick="selectSuggestion(\'' + suggestion.replace(/'/g, "\\'") + '\')">' + highlightedText + '</div>';
+      }).join('');
+      suggestionsContainer.classList.add('show');
+      } else {
+      suggestionsContainer.classList.remove('show');
+      }
+      }
+
+      function hideSearchSuggestions() {
+      setTimeout(() => {
+      document.getElementById('searchSuggestions').classList.remove('show');
+      }, 200);
+      }
+
+      function selectSuggestion(value) {
+      document.getElementById('searchInput').value = value;
+      searchEntries();
+      }
+
+      // Sort entries
+      function sortEntries() {
+      const activeTab = document.querySelector('.filter-tab.active');
+      const filterType = activeTab.textContent.toLowerCase() === 'all' ? 'all' : activeTab.textContent;
+      displayEntries(filterType);
+      }
+
+      // Edit entry
+      function editEntry(type, index) {
+      editingIndex = index;
+      showForm(type);
+      }
+
+      // Duplicate entry
+      function duplicateEntry(type, index) {
+      const original = formData[type][index];
+      const duplicate = {...original};
+      duplicate.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+      duplicate.createdAt = new Date().toISOString();
+      formData[type].push(duplicate);
+      saveData();
+      showNotification('Success', 'Entry duplicated', 'success');
+      displayEntries('all');
+      logActivity('Duplicated ' + type + ' entry');
+      }
+
+      // Delete entry
+      function deleteEntry(type, index) {
+      sweetAlert({
+      title: 'Delete Entry?',
+      text: 'Are you sure you want to delete this entry? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      callback: function() {
+      formData[type].splice(index, 1);
+      saveData();
+      showNotification('Success', 'Entry deleted', 'success');
+      displayEntries('all');
+      logActivity('Deleted ' + type + ' entry');
+      }
+      });
+      }
+
+      // Export single entry
+      function exportSingle(type, index) {
+      const data = formData[type][index];
+      const xml = generateXML(type, data);
+      downloadXML(xml, type + '_' + data.id + '.xml');
+      showNotification('Success', 'XML exported', 'success');
+      logActivity('Exported single ' + type + ' entry');
+      }
+
+      // Fixed export filtered entries
+      function exportFiltered() {
+      if (selectedEntries.size === 0) {
+      showNotification('Warning', 'No entries selected', 'warning');
+      return;
+      }
+
+      const zip = new JSZip();
+
+      selectedEntries.forEach(key => {
+      const parts = key.split('-');
+      const type = parts.slice(0, -1).join('-'); // Handle form types like '15CA-A'
+      const index = parseInt(parts[parts.length - 1]);
+      const data = formData[type][index];
+      if (data) {
+      const xml = generateXML(type, data);
+      const folder = zip.folder(type);
+      folder.file(type + '_' + data.id + '.xml', xml);
+      }
+      });
+
+      zip.generateAsync({type: 'blob'}).then(function(content) {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(content);
+      link.download = 'Form15CA_15CB_Selected_' + new Date().toISOString().split('T')[0] + '.zip';
+      link.click();
+      showNotification('Success', 'Selected entries exported', 'success');
+      logActivity('Exported ' + selectedEntries.size + ' selected entries');
+      });
+      }
+
+      // Delete selected entries
+      function deleteSelected() {
+      if (selectedEntries.size === 0) {
+      showNotification('Warning', 'No entries selected', 'warning');
+      return;
+      }
+
+      sweetAlert({
+      title: 'Delete Selected Entries?',
+      text: 'Are you sure you want to delete ' + selectedEntries.size + ' selected entries? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete All',
+      callback: function() {
+      const toDelete = Array.from(selectedEntries).map(key => {
+      const parts = key.split('-');
+      const type = parts.slice(0, -1).join('-');
+      const index = parseInt(parts[parts.length - 1]);
+      return {type, index};
+      }).sort((a, b) => b.index - a.index);
+
+      toDelete.forEach(item => {
+      formData[item.type].splice(item.index, 1);
+      });
+
+      selectedEntries.clear();
+      saveData();
+      showNotification('Success', 'Selected entries deleted', 'success');
+      displayEntries('all');
+      logActivity('Deleted multiple entries');
+      }
+      });
+      }
+
+      // Load sample bulk data
+      function loadSampleBulkData() {
+      const formType = document.getElementById('bulkFormType').value;
+      const sampleData = {
+      '15CA-A': 'Remitter: ABC Corporation Ltd, PAN: ABCDE1234F, TAN: ABCD12345E, Email: finance@abccorp.com, Phone: 9876543210, Address: Tower A Business Park Mumbai 400001\n' +
+      'Remittee: XYZ International Inc, Country: Switzerland, City: Zurich, Amount: 100000 INR, TDS: 10%, Date: 15-12-2024\n\n' +
+      'Remitter: DEF Industries, PAN: DEFGH5678I, TAN: DEFG56789J, Email: accounts@def.com, Phone: 9988776655, Address: Industrial Complex Pune 411001\n' +
+      'Remittee: Global Solutions Ltd, Country: USA, City: New York, Amount: 200000 INR, TDS: 15%, Date: 20-12-2024',
+
+      '15CA-B': 'Company: Tech Solutions Pvt Ltd\nPAN: TECHS1234A\nTAN: TECH12345A\nRemittee: Software Corp USA\nAmount: $50000\nINR Amount: 4150000\nAO Name: Rajesh Kumar\nAO Designation: ITO\nOrder Number: ITO/MUM/2024/1234\nOrder Date: 15-11-2024\n\n' +
+      'Company: Digital Services Ltd\nPAN: DIGIT5678B\nTAN: DIGI56789B\nRemittee: Cloud Systems UK\nAmount: £30000\nINR Amount: 3150000\nAO Name: Priya Sharma\nAO Designation: ITO\nOrder Number: ITO/BLR/2024/5678\nOrder Date: 10-11-2024',
+
+      '15CA-C': 'REMITTER DETAILS:\nName: Consulting Group India\nPAN: CONSU9012C\nTAN: CONS90123C\nEmail: billing@consultinggroup.in\nPhone: 9123456789\nAddress: Consulting Tower, Electronic City, Bangalore 560001\n\n' +
+      'REMITTEE DETAILS:\nName: European Business Consultants\nCountry: Germany\nCity: Frankfurt\nAmount in EUR: 75000\nAmount in INR: 6975000\n\n' +
+      'ACCOUNTANT DETAILS:\nCA Firm: Sharma & Associates\nMembership No: 123456\nCertificate No: CERT/2024/5678\nCertificate Date: 05-12-2024',
+
+      '15CA-D': 'Export Company: JKL Exports Ltd | PAN: JKLMN3456O | TAN: JKLM34567P | exports@jklexports.com | 9876501234 | Export House, T.Nagar, Chennai 600001 | Trading Partner: Asian Trading Co, Singapore | Export Value: USD 25000 (INR 2075000) | Commission Rate: 5% | Payment Date: 30-12-2024',
+
+      '15CB': 'Financial Services Company: MNO Financial\nPAN Number: MNOPQ7890R\nTAN Number: MNOP78901S\nContact: compliance@mnofinancial.com\nPhone: 9012345678\nOffice: Financial Tower, Connaught Place, Delhi 110001\n\n' +
+      'Investment Fund Details:\nName: International Investment Fund\nLocation: Dubai, UAE\nInvestment Amount: AED 100000\nINR Equivalent: 2250000\nNature: Interest on Securities\n\n' +
+      'Chartered Accountant:\nName: CA Patel & Partners\nMembership: 789012\nCertificate: CB/2024/9012\nDate: 08-12-2024'
+      };
+
+      document.getElementById('bulkData').value = sampleData[formType] || '';
+      showNotification('Success', 'Sample data loaded', 'success');
+      }
+
+      // Clear bulk data
+      function clearBulkData() {
+      document.getElementById('bulkData').value = '';
+      document.getElementById('bulkPreview').classList.add('hidden');
+      bulkParsedData = [];
+      }
+
+      // Process bulk import
+      function processBulkImport() {
+      const formType = document.getElementById('bulkFormType').value;
+      const textData = document.getElementById('bulkData').value.trim();
+      const mode = document.getElementById('processingMode').value;
+
+      if (!textData) {
+      showNotification('Error', 'Please enter data to process', 'error');
+      return;
+      }
+
+      showLoading('Processing with AI...', 'Analyzing and structuring your data');
+
+      // Simulate AI processing
+      setTimeout(() => {
+      try {
+      bulkParsedData = parseUnstructuredData(formType, textData, mode);
+      hideLoading();
+
+      if (bulkParsedData.length > 0) {
+      displayBulkPreview();
+      showNotification('Success', 'Parsed ' + bulkParsedData.length + ' entries', 'success');
+      } else {
+      showNotification('Error', 'No valid data could be parsed', 'error');
+      }
+      } catch (error) {
+      hideLoading();
+      showNotification('Error', 'Failed to parse data: ' + error.message, 'error');
+      }
+      }, 2000);
+      }
+
+      // Parse unstructured data (simulated AI)
+      function parseUnstructuredData(formType, text, mode) {
+      const entries = [];
+      const blocks = text.split(/\n\n+/);
+
+      blocks.forEach(block => {
+      if (block.trim()) {
+      const entry = {};
+      const lines = block.split(/\n/);
+
+      lines.forEach(line => {
+      // Extract key-value pairs
+      const patterns = [
+      {key: 'remitterName', regex: /(?:company|remitter|name):\s*(.+)/i},
+      {key: 'remitterPAN', regex: /pan:\s*([A-Z]{5}[0-9]{4}[A-Z]{1})/i},
+      {key: 'remitterTAN', regex: /tan:\s*([A-Z]{4}[0-9]{5}[A-Z]{1})/i},
+      {key: 'remitterEmail', regex: /email:\s*([^\s]+@[^\s]+)/i},
+      {key: 'remitterPhone', regex: /phone:\s*(\d{10})/i},
+      {key: 'remitteeName', regex: /(?:remittee|recipient|beneficiary):\s*(.+)/i},
+      {key: 'remitteeCountry', regex: /country:\s*(.+)/i},
+      {key: 'amtPayIndRem', regex: /(?:inr|amount).*?(\d+)/i},
+      {key: 'propDateRem', regex: /(?:date|payment).*?(\d{1,2}[-\/]\d{1,2}[-\/]\d{4})/i}
+      ];
+
+      patterns.forEach(pattern => {
+      const match = line.match(pattern.regex);
+      if (match) {
+      entry[pattern.key] = match[1].trim();
+      }
+      });
+      });
+
+      // Add default values
+      if (Object.keys(entry).length > 0) {
+      entry.remitterCity = entry.remitterCity || 'Mumbai';
+      entry.remitterState = entry.remitterState || '15';
+      entry.remitterPincode = entry.remitterPincode || '400001';
+      entry.nameBankCode = '9001101';
+      entry.branchName = 'Main Branch';
+      entry.natureRemCategory = '16.99';
+      entry.verDesignation = 'Director';
+      entry.verificationPlace = 'Mumbai';
+      entry.verificationDate = new Date().toISOString().split('T')[0];
+      entry.styledName = 'Authorized Signatory';
+
+      // Convert country names to codes
+      if (entry.remitteeCountry) {
+      const country = countries.find(c => 
+      c.name.toLowerCase().includes(entry.remitteeCountry.toLowerCase())
+      );
+      if (country) {
+      entry.remitteeCountry = country.code;
+      }
+      }
+
+      // Format dates
+      if (entry.propDateRem) {
+      const dateParts = entry.propDateRem.split(/[-\/]/);
+      if (dateParts.length === 3) {
+      entry.propDateRem = dateParts[2] + '-' + dateParts[1].padStart(2, '0') + '-' + dateParts[0].padStart(2, '0');
+      }
+      }
+
+      entries.push(entry);
+      }
+      }
+      });
+
+      return entries;
+      }
+
+      // Display bulk preview
+      function displayBulkPreview() {
+      const preview = document.getElementById('bulkPreview');
+      const content = document.getElementById('bulkPreviewContent');
+
+      content.innerHTML = '<div class="space-y-4">' +
+      bulkParsedData.map((entry, index) => 
+      '<div class="glass-card rounded-lg p-4">' +
+      '<h5 class="font-medium mb-2">Entry ' + (index + 1) + '</h5>' +
+      '<div class="grid grid-cols-2 gap-2 text-sm">' +
+      Object.entries(entry).map(([key, value]) => 
+      '<div><span class="text-gray-500">' + key + ':</span> ' + value + '</div>'
+      ).join('') +
+      '</div>' +
+      '</div>'
+      ).join('') +
+      '</div>';
+
+      preview.classList.remove('hidden');
+      }
+
+      // Cancel bulk import
+      function cancelBulkImport() {
+      document.getElementById('bulkPreview').classList.add('hidden');
+      bulkParsedData = [];
+      }
+
+      // Confirm bulk import
+      function confirmBulkImport() {
+      const formType = document.getElementById('bulkFormType').value;
+
+      bulkParsedData.forEach(entry => {
+      entry.createdAt = new Date().toISOString();
+      entry.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+      formData[formType].push(entry);
+      });
+
+      saveData();
+      showNotification('Success', bulkParsedData.length + ' entries imported', 'success');
+      logActivity('Bulk imported ' + bulkParsedData.length + ' ' + formType + ' entries');
+
+      clearBulkData();
+      showSection('entries');
+      }
+
+      // Generate XML
+      function generateXML(type, data) {
+      const today = new Date().toISOString().split('T')[0];
+      let xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+
+      if (type === '15CB') {
+      xml += '<FORM15CB:FORM15CB xmlns:Form="http://incometaxindiaefiling.gov.in/common" xmlns:FORM15CB="http://incometaxindiaefiling.gov.in/FORM15CAB">\n';
+      xml += '\t<Form:CreationInfo>\n';
+      xml += '\t\t<Form:SWVersionNo>1</Form:SWVersionNo>\n';
+      xml += '\t\t<Form:SWCreatedBy>TaxPro-Enterprise</Form:SWCreatedBy>\n';
+      xml += '\t\t<Form:XMLCreatedBy>TaxPro-Enterprise</Form:XMLCreatedBy>\n';
+      xml += '\t\t<Form:XMLCreationDate>' + today + '</Form:XMLCreationDate>\n';
+      xml += '\t\t<Form:IntermediaryCity>Delhi</Form:IntermediaryCity>\n';
+      xml += '\t</Form:CreationInfo>\n';
+      xml += '\t<Form:Form_Details>\n';
+      xml += '\t\t<Form:FormName>FORM15CB</Form:FormName>\n';
+      xml += '\t\t<Form:Description>FORM15CB</Form:Description>\n';
+      xml += '\t\t<Form:AssessmentYear>2024</Form:AssessmentYear>\n';
+      xml += '\t\t<Form:SchemaVer>Ver1.1</Form:SchemaVer>\n';
+      xml += '\t\t<Form:FormVer>1</Form:FormVer>\n';
+      xml += '\t</Form:Form_Details>\n';
+
+      // Add form-specific content
+      xml += '\t<FORM15CB:RemitterDetails>\n';
+      xml += '\t\t<FORM15CB:IorWe>02</FORM15CB:IorWe>\n';
+      xml += '\t\t<FORM15CB:RemitterHonorific>01</FORM15CB:RemitterHonorific>\n';
+      xml += '\t\t<FORM15CB:NameRemitter>' + (data.remitterName || '') + '</FORM15CB:NameRemitter>\n';
+      xml += '\t\t<FORM15CB:PAN>' + (data.remitterPAN || '') + '</FORM15CB:PAN>\n';
+      xml += '\t\t<FORM15CB:BeneficiaryHonorific>02</FORM15CB:BeneficiaryHonorific>\n';
+      xml += '\t</FORM15CB:RemitterDetails>\n';
+
+      xml += '\t<FORM15CB:RemitteeDetls>\n';
+      xml += '\t\t<FORM15CB:NameRemittee>' + (data.remitteeName || '') + '</FORM15CB:NameRemittee>\n';
+      xml += '\t\t<FORM15CB:RemitteeAddrs>\n';
+      xml += '\t\t\t<FORM15CB:PremisesBuildingVillage>' + (data.remitteeBuilding || '') + '</FORM15CB:PremisesBuildingVillage>\n';
+      xml += '\t\t\t<FORM15CB:TownCityDistrict>' + (data.remitteeCity || '') + '</FORM15CB:TownCityDistrict>\n';
+      xml += '\t\t\t<FORM15CB:ZipCode>' + (data.remitteeZipCode || '') + '</FORM15CB:ZipCode>\n';
+      xml += '\t\t\t<Form:State>' + (data.remitteeState || '') + '</Form:State>\n';
+      xml += '\t\t\t<FORM15CB:Country>' + (data.remitteeCountry || '') + '</FORM15CB:Country>\n';
+      xml += '\t\t</FORM15CB:RemitteeAddrs>\n';
+      xml += '\t</FORM15CB:RemitteeDetls>\n';
+
+      xml += '\t<FORM15CB:RemittanceDetails>\n';
+      xml += '\t\t<FORM15CB:AmtPayForgnRem>' + (data.amtPayForgnRem || '') + '</FORM15CB:AmtPayForgnRem>\n';
+      xml += '\t\t<FORM15CB:AmtPayIndRem>' + (data.amtPayIndRem || '') + '</FORM15CB:AmtPayIndRem>\n';
+      xml += '\t\t<FORM15CB:NameBankCode>' + (data.nameBankCode || '') + '</FORM15CB:NameBankCode>\n';
+      xml += '\t\t<FORM15CB:BranchName>' + (data.branchName || '') + '</FORM15CB:BranchName>\n';
+      xml += '\t\t<FORM15CB:PropDateRem>' + (data.propDateRem || '') + '</FORM15CB:PropDateRem>\n';
+      xml += '\t\t<FORM15CB:NatureRemCategory>' + (data.natureRemCategory || '') + '</FORM15CB:NatureRemCategory>\n';
+      xml += '\t</FORM15CB:RemittanceDetails>\n';
+
+      xml += '\t<FORM15CB:AcctntDetls>\n';
+      xml += '\t\t<FORM15CB:NameAcctnt>' + (data.nameAcctnt || '') + '</FORM15CB:NameAcctnt>\n';
+      xml += '\t\t<FORM15CB:NameFirmAcctnt>' + (data.nameFirmAcctnt || '') + '</FORM15CB:NameFirmAcctnt>\n';
+      xml += '\t\t<FORM15CB:MembershipNumber>' + (data.membershipNumber || '') + '</FORM15CB:MembershipNumber>\n';
+      xml += '\t</FORM15CB:AcctntDetls>\n';
+
+      xml += '</FORM15CB:FORM15CB>';
+      } else {
+      // 15CA forms
+      xml += '<ns5:FORM15CA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Form="http://incometaxindiaefiling.gov.in/common" xmlns:FORM15CA="http://incometaxindiaefiling.gov.in/FORM15CA" xmlns:FORM15CB="http://incometaxindiaefiling.gov.in/FORM15CB" xmlns:ns5="http://incometaxindiaefiling.gov.in/FORM15CAB">\n';
+      xml += '\t<Form:CreationInfo>\n';
+      xml += '\t\t<Form:SWVersionNo>1.0</Form:SWVersionNo>\n';
+      xml += '\t\t<Form:SWCreatedBy>TaxPro-Enterprise</Form:SWCreatedBy>\n';
+      xml += '\t\t<Form:XMLCreatedBy>TaxPro-Enterprise</Form:XMLCreatedBy>\n';
+      xml += '\t\t<Form:XMLCreationDate>' + today + '</Form:XMLCreationDate>\n';
+      xml += '\t\t<Form:IntermediaryCity>Delhi</Form:IntermediaryCity>\n';
+      xml += '\t</Form:CreationInfo>\n';
+      xml += '\t<Form:Form_Details>\n';
+      xml += '\t\t<Form:FormName>FORM15CA</Form:FormName>\n';
+      xml += '\t\t<Form:Description>FORM15CA</Form:Description>\n';
+      xml += '\t\t<Form:AssessmentYear>2024</Form:AssessmentYear>\n';
+      xml += '\t\t<Form:SchemaVer>Ver1.0</Form:SchemaVer>\n';
+      xml += '\t\t<Form:FormVer>1.1</Form:FormVer>\n';
+      xml += '\t</Form:Form_Details>\n';
+      xml += '\t<ns5:PartType>P' + type.split('-')[1] + '</ns5:PartType>\n';
+      xml += '\t<ns5:RemitterDetls>\n';
+      xml += '\t\t<ns5:NameRemitter>' + (data.remitterName || '') + '</ns5:NameRemitter>\n';
+      xml += '\t\t<ns5:PAN>' + (data.remitterPAN || '') + '</ns5:PAN>\n';
+      xml += '\t\t<ns5:Tan>' + (data.remitterTAN || '') + '</ns5:Tan>\n';
+      xml += '\t\t<ns5:RemitterAddrs>\n';
+      xml += '\t\t\t<ns5:PremisesBuildingVillage>' + (data.remitterBuilding || '') + '</ns5:PremisesBuildingVillage>\n';
+      xml += '\t\t\t<ns5:TownCityDistrict>' + (data.remitterCity || '') + '</ns5:TownCityDistrict>\n';
+      xml += '\t\t\t<ns5:AreaLocality>' + (data.remitterArea || '') + '</ns5:AreaLocality>\n';
+      xml += '\t\t\t<ns5:Pincode>' + (data.remitterPincode || '') + '</ns5:Pincode>\n';
+      xml += '\t\t\t<Form:State>' + (data.remitterState || '') + '</Form:State>\n';
+      xml += '\t\t\t<ns5:Country>91</ns5:Country>\n';
+      xml += '\t\t</ns5:RemitterAddrs>\n';
+      xml += '\t\t<ns5:EmailRemitter>' + (data.remitterEmail || '') + '</ns5:EmailRemitter>\n';
+      xml += '\t\t<ns5:PhoneRemitter>' + (data.remitterPhone || '') + '</ns5:PhoneRemitter>\n';
+      xml += '\t\t<ns5:Status>1</ns5:Status>\n';
+      xml += '\t\t<ns5:DomesticFlg>1</ns5:DomesticFlg>\n';
+      xml += '\t</ns5:RemitterDetls>\n';
+
+      xml += '\t<ns5:RemitteeDetls>\n';
+      xml += '\t\t<ns5:NameRemittee>' + (data.remitteeName || '') + '</ns5:NameRemittee>\n';
+      if (data.remitteePAN) {
+      xml += '\t\t<ns5:PanRemittee>' + data.remitteePAN + '</ns5:PanRemittee>\n';
+      }
+      xml += '\t\t<ns5:RemitteeAddrs>\n';
+      xml += '\t\t\t<ns5:PremisesBuildingVillage>' + (data.remitteeBuilding || '') + '</ns5:PremisesBuildingVillage>\n';
+      xml += '\t\t\t<ns5:TownCityDistrict>' + (data.remitteeCity || '') + '</ns5:TownCityDistrict>\n';
+      xml += '\t\t\t<ns5:ZipCode>' + (data.remitteeZipCode || '') + '</ns5:ZipCode>\n';
+      xml += '\t\t\t<Form:State>' + (data.remitteeState || '') + '</Form:State>\n';
+      xml += '\t\t\t<ns5:Country>' + (data.remitteeCountry || '') + '</ns5:Country>\n';
+      xml += '\t\t</ns5:RemitteeAddrs>\n';
+      if (data.remitteeEmail) {
+      xml += '\t\t<ns5:EmailRemittee>' + data.remitteeEmail + '</ns5:EmailRemittee>\n';
+      }
+      xml += '\t</ns5:RemitteeDetls>\n';
+
+      xml += '\t<ns5:RemittanceDetls>\n';
+      if (type === '15CA-A') {
+      xml += '\t\t<ns5:AmtPayBefTds>' + (data.amtPayBefTds || '') + '</ns5:AmtPayBefTds>\n';
+      xml += '\t\t<ns5:AggAmtRem>' + (data.aggAmtRem || '') + '</ns5:AggAmtRem>\n';
+      xml += '\t\t<ns5:AmtTaxDeductn>' + (data.amtTaxDeductn || '') + '</ns5:AmtTaxDeductn>\n';
+      xml += '\t\t<ns5:DateOfDeductn>' + (data.dateOfDeductn || '') + '</ns5:DateOfDeductn>\n';
+      xml += '\t\t<ns5:RateofTDS>' + (data.rateofTDS || '') + '</ns5:RateofTDS>\n';
+      xml += '\t\t<ns5:RevPurCategory>' + (data.revPurCategory || '') + '</ns5:RevPurCategory>\n';
+      xml += '\t\t<ns5:RevPurCode>' + (data.revPurCode || '') + '</ns5:RevPurCode>\n';
+      }
+      xml += '\t\t<ns5:NameBankCode>' + (data.nameBankCode || '') + '</ns5:NameBankCode>\n';
+      xml += '\t\t<ns5:BranchName>' + (data.branchName || '') + '</ns5:BranchName>\n';
+      xml += '\t\t<ns5:PropDateRem>' + (data.propDateRem || '') + '</ns5:PropDateRem>\n';
+      xml += '\t\t<ns5:NatureRemCategory>' + (data.natureRemCategory || '') + '</ns5:NatureRemCategory>\n';
+
+      if (type !== '15CA-A') {
+      if (data.bsrCode) xml += '\t\t<ns5:BsrCode>' + data.bsrCode + '</ns5:BsrCode>\n';
+      if (data.currencySecbCode) xml += '\t\t<ns5:CurrencySecbCode>' + data.currencySecbCode + '</ns5:CurrencySecbCode>\n';
+      if (data.amtPayForgnRem) xml += '\t\t<ns5:AmtPayForgnRem>' + data.amtPayForgnRem + '</ns5:AmtPayForgnRem>\n';
+      if (data.amtPayIndRem) xml += '\t\t<ns5:AmtPayIndRem>' + data.amtPayIndRem + '</ns5:AmtPayIndRem>\n';
+      if (data.natureRemCode) xml += '\t\t<ns5:NatureRemCode>' + data.natureRemCode + '</ns5:NatureRemCode>\n';
+      }
+      xml += '\t</ns5:RemittanceDetls>\n';
+
+      if (type === '15CA-B') {
+      xml += '\t<ns5:AoOrderDetls>\n';
+      xml += '\t\t<ns5:CertSection>' + (data.certSection || '') + '</ns5:CertSection>\n';
+      xml += '\t\t<ns5:NameAo>' + (data.nameAo || '') + '</ns5:NameAo>\n';
+      xml += '\t\t<ns5:DesgAo>' + (data.desgAo || '') + '</ns5:DesgAo>\n';
+      xml += '\t\t<ns5:OrderDateAo>' + (data.orderDateAo || '') + '</ns5:OrderDateAo>\n';
+      xml += '\t\t<ns5:OrderNumAo>' + (data.orderNumAo || '') + '</ns5:OrderNumAo>\n';
+      xml += '\t</ns5:AoOrderDetls>\n';
+      }
+
+      if (type === '15CA-C') {
+      xml += '\t<ns5:AcctntDetls>\n';
+      xml += '\t\t<ns5:NameAcctnt>' + (data.nameAcctnt || '') + '</ns5:NameAcctnt>\n';
+      xml += '\t\t<ns5:NameFirmAcctnt>' + (data.nameFirmAcctnt || '') + '</ns5:NameFirmAcctnt>\n';
+      xml += '\t\t<ns5:MembershipNumber>' + (data.membershipNumber || '') + '</ns5:MembershipNumber>\n';
+      if (data.certDate) xml += '\t\t<ns5:CertDate>' + data.certDate + '</ns5:CertDate>\n';
+      if (data.certNumber) xml += '\t\t<ns5:CertNumber>' + data.certNumber + '</ns5:CertNumber>\n';
+      xml += '\t</ns5:AcctntDetls>\n';
+      }
+
+      xml += '\t<ns5:Declaration>\n';
+      xml += '\t\t<ns5:LandlordName>' + (data.landlordName || '') + '</ns5:LandlordName>\n';
+      xml += '\t\t<ns5:StyledName>' + (data.styledName || '') + '</ns5:StyledName>\n';
+      xml += '\t\t<ns5:I_We>1</ns5:I_We>\n';
+      xml += '\t\t<ns5:VerificationDate>' + (data.verificationDate || '') + '</ns5:VerificationDate>\n';
+      xml += '\t\t<ns5:VerDesignation>' + (data.verDesignation || '') + '</ns5:VerDesignation>\n';
+      xml += '\t\t<ns5:VerificationPlace>' + (data.verificationPlace || '') + '</ns5:VerificationPlace>\n';
+      xml += '\t</ns5:Declaration>\n';
+
+      xml += '</ns5:FORM15CA>';
+      }
+
+      return xml;
+      }
+
+      // Download XML
+      function downloadXML(content, filename) {
+      const blob = new Blob([content], { type: 'application/xml' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      }
+
+      // Enhanced export data to include all system data
+      function exportData() {
+      const exportType = document.getElementById('exportType').value;
+      const exportFrom = document.getElementById('exportFrom').value;
+      const exportTo = document.getElementById('exportTo').value;
+
+      let dataToExport = {};
+
+      switch(exportType) {
+      case 'all':
+      // Export complete system state
+      dataToExport = {
+      version: '2.0',
+      exportDate: new Date().toISOString(),
+      formData: formData,
+      masterData: masterData,
+      configuration: configuration,
+      activityLog: activityLog,
+      statistics: {
+      totalEntries: Object.values(formData).reduce((sum, arr) => sum + arr.length, 0),
+      entriesByType: Object.keys(formData).reduce((acc, type) => {
+      acc[type] = formData[type].length;
+      return acc;
+      }, {})
+      }
+      };
+      break;
+      case 'forms':
+      dataToExport = {formData: formData};
+      break;
+      case 'master':
+      dataToExport = {masterData: masterData};
+      break;
+      case 'config':
+      dataToExport = {configuration: configuration};
+      break;
+      }
+
+      // Apply date filter if specified
+      if (exportFrom || exportTo) {
+      const fromDate = exportFrom ? new Date(exportFrom) : new Date(0);
+      const toDate = exportTo ? new Date(exportTo) : new Date();
+
+      if (dataToExport.formData) {
+      const filteredData = {};
+      Object.keys(dataToExport.formData).forEach(type => {
+      filteredData[type] = dataToExport.formData[type].filter(entry => {
+      const entryDate = new Date(entry.createdAt);
+      return entryDate >= fromDate && entryDate <= toDate;
+      });
+      });
+      dataToExport.formData = filteredData;
+      }
+      }
+
+      // Create export package
+      const zip = new JSZip();
+
+      // Add JSON data with metadata
+      const metadata = {
+      exportInfo: {
+      systemName: 'TaxPro Suite Enterprise Edition v2.0',
+      exportDate: new Date().toISOString(),
+      exportType: exportType,
+      dateRange: {
+      from: exportFrom || 'All',
+      to: exportTo || 'All'
+      }
+      },
+      data: dataToExport
+      };
+
+      zip.file('data.json', JSON.stringify(metadata, null, 2));
+
+      // Add XML files if exporting forms
+      if (dataToExport.formData) {
+      Object.keys(dataToExport.formData).forEach(type => {
+      if (dataToExport.formData[type].length > 0) {
+      const folder = zip.folder(type);
+      dataToExport.formData[type].forEach((entry, index) => {
+      const xml = generateXML(type, entry);
+      folder.file(type + '_' + (index + 1) + '.xml', xml);
+      });
+      }
+      });
+      }
+
+      // Add README file
+      const readme = `TaxPro Suite Enterprise Edition v2.0
+      Export Date: ${new Date().toLocaleString()}
+      Export Type: ${exportType}
+
+      This export contains:
+      ${exportType === 'all' ? '- All form data\n- Master data (Bank codes, Nature of Remittance codes)\n- System configuration\n- Activity logs' : ''}
+      ${exportType === 'forms' ? '- Form data only' : ''}
+      ${exportType === 'master' ? '- Master data only' : ''}
+      ${exportType === 'config' ? '- Configuration only' : ''}
+
+      To import this data:
+      1. Open TaxPro Suite
+      2. Go to Import/Export section
+      3. Select import type and upload the data.json file
+
+      For support, contact: support@taxprosuite.com`;
+
+      zip.file('README.txt', readme);
+
+      // Generate and download
+      zip.generateAsync({type: 'blob'}).then(function(content) {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(content);
+      link.download = 'TaxPro_Export_' + new Date().toISOString().split('T')[0] + '.zip';
+      link.click();
+      showNotification('Success', 'Data exported successfully', 'success');
+      logActivity('Exported ' + exportType + ' data');
+      });
+      }
+
+      // Handle import
+      function handleImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const importType = document.getElementById('importType').value;
+
+      showLoading('Importing data...', 'Processing ' + file.name);
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+      try {
+      const imported = JSON.parse(e.target.result);
+      const data = imported.data || imported; // Handle both new and old export formats
+
+      switch(importType) {
+      case 'merge':
+      // Merge with existing data
+      if (data.formData) {
+      Object.keys(data.formData).forEach(type => {
+      formData[type] = [...formData[type], ...data.formData[type]];
+      });
+      }
+      if (data.masterData) {
+      Object.keys(data.masterData).forEach(key => {
+      masterData[key] = [...masterData[key], ...data.masterData[key]];
+      });
+      }
+      break;
+
+      case 'replace':
+      // Replace all data
+      if (data.formData) formData = data.formData;
+      if (data.masterData) masterData = data.masterData;
+      if (data.configuration) configuration = data.configuration;
+      if (data.activityLog) activityLog = data.activityLog;
+      break;
+
+      case 'new':
+      // Import as new entries
+      if (data.formData) {
+      Object.keys(data.formData).forEach(type => {
+      data.formData[type].forEach(entry => {
+      entry.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+      entry.createdAt = new Date().toISOString();
+      formData[type].push(entry);
+      });
+      });
+      }
+      break;
+      }
+
+      saveData();
+      saveMasterData();
+      saveConfiguration();
+
+      hideLoading();
+      showNotification('Success', 'Data imported successfully', 'success');
+      logActivity('Imported data (' + importType + ')');
+
+      // Refresh current view
+      location.reload();
+      } catch (error) {
+      hideLoading();
+      showNotification('Error', 'Failed to import: ' + error.message, 'error');
+      }
+      };
+
+      reader.readAsText(file);
+      }
+
+      // Create backup
+      function createBackup() {
+      const backup = {
+      version: '2.0',
+      timestamp: new Date().toISOString(),
+      systemInfo: {
+      name: 'TaxPro Suite Enterprise Edition',
+      version: 'v2.0'
+      },
+      data: {
+      formData: formData,
+      masterData: masterData,
+      configuration: configuration,
+      activityLog: activityLog
+      }
+      };
+
+      const json = JSON.stringify(backup, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'TaxPro_Backup_' + new Date().toISOString().split('T')[0] + '.json';
+      link.click();
+
+      showNotification('Success', 'Backup created successfully', 'success');
+      logActivity('Created backup');
+      }
+
+      // Restore backup
+      function restoreBackup() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+      try {
+      const backup = JSON.parse(e.target.result);
+
+      sweetAlert({
+      title: 'Restore Backup?',
+      text: 'This will replace all current data with the backup from ' + new Date(backup.timestamp).toLocaleString() + '. Continue?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Restore',
+      callback: function() {
+      formData = backup.data.formData || {};
+      masterData = backup.data.masterData || {};
+      configuration = backup.data.configuration || {};
+      activityLog = backup.data.activityLog || [];
+
+      saveData();
+      saveMasterData();
+      saveConfiguration();
+      localStorage.setItem('form15ca_activity', JSON.stringify(activityLog));
+
+      showNotification('Success', 'Backup restored successfully', 'success');
+      logActivity('Restored backup from ' + backup.timestamp);
+
+      location.reload();
+      }
+      });
+      } catch (error) {
+      showNotification('Error', 'Failed to restore backup: ' + error.message, 'error');
+      }
+      };
+      reader.readAsText(file);
+      };
+      input.click();
+      }
+
+      // Clear all data
+      function clearAllData() {
+      sweetAlert({
+      title: 'Clear All Data?',
+      text: 'This will permanently delete all data including forms, master data, configuration, and activity logs. This action cannot be undone!',
+      icon: 'error',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Clear All',
+      callback: function() {
+      sweetAlert({
+      title: 'Final Confirmation',
+      text: 'Are you absolutely sure? All data will be lost permanently!',
+      icon: 'error',
+      showCancelButton: true,
+      confirmButtonText: 'Delete Everything',
+      callback: function() {
+      localStorage.clear();
+      location.reload();
+      }
+      });
+      }
+      });
+      }
+
+      // Initialize Charts
+      function initCharts() {
+      // Trends Chart
+      const trendsCtx = document.getElementById('trendsChart');
+      if (trendsCtx) {
+      new Chart(trendsCtx, {
+      type: 'line',
+      data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+      label: '15CA-A',
+      data: [12, 19, 3, 5, 2, 3],
+      borderColor: 'rgb(59, 130, 246)',
+      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      tension: 0.4
+      }, {
+      label: '15CA-B',
+      data: [7, 11, 5, 8, 3, 7],
+      borderColor: 'rgb(16, 185, 129)',
+      backgroundColor: 'rgba(16, 185, 129, 0.1)',
+      tension: 0.4
+      }, {
+      label: '15CA-C',
+      data: [5, 8, 12, 6, 9, 4],
+      borderColor: 'rgb(139, 92, 246)',
+      backgroundColor: 'rgba(139, 92, 246, 0.1)',
+      tension: 0.4
+      }]
+      },
+      options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+      legend: {
+      labels: { color: 'white' }
+      }
+      },
+      scales: {
+      x: {
+      grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+      },
+      y: {
+      grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+      }
+      }
+      }
+      });
+      }
+
+      // Distribution Chart
+      const distributionCtx = document.getElementById('distributionChart');
+      if (distributionCtx) {
+      new Chart(distributionCtx, {
+      type: 'doughnut',
+      data: {
+      labels: ['15CA-A', '15CA-B', '15CA-C', '15CA-D', '15CB'],
+      datasets: [{
+      data: [30, 20, 25, 15, 10],
+      backgroundColor: [
+      'rgba(59, 130, 246, 0.8)',
+      'rgba(16, 185, 129, 0.8)',
+      'rgba(139, 92, 246, 0.8)',
+      'rgba(251, 146, 60, 0.8)',
+      'rgba(239, 68, 68, 0.8)'
+      ]
+      }]
+      },
+      options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+      legend: {
+      position: 'right',
+      labels: { color: 'white' }
+      }
+      }
+      }
+      });
+      }
+      }
+
+      // Update Charts
+      function updateCharts() {
+      // This would update charts with real data
+      // For now, using the initialized charts
+      }
+
+      // Update Analytics
+      function updateAnalytics() {
+      // Volume Chart
+      const volumeCtx = document.getElementById('volumeChart');
+      if (volumeCtx) {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+      const volumeData = months.map(() => Math.floor(Math.random() * 10000000));
+
+      new Chart(volumeCtx, {
+      type: 'bar',
+      data: {
+      labels: months,
+      datasets: [{
+      label: 'Remittance Volume (INR)',
+      data: volumeData,
+      backgroundColor: 'rgba(99, 102, 241, 0.6)',
+      borderColor: 'rgba(99, 102, 241, 1)',
+      borderWidth: 1
+      }]
+      },
+      options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+      legend: { display: false }
+      },
+      scales: {
+      x: {
+      grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+      },
+      y: {
+      grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      ticks: { 
+      color: 'rgba(255, 255, 255, 0.7)',
+      callback: function(value) {
+      return '¹' + value.toLocaleString();
+      }
+      }
+      }
+      }
+      }
+      });
+      }
+
+      // Country Chart
+      const countryCtx = document.getElementById('countryChart');
+      if (countryCtx) {
+      new Chart(countryCtx, {
+      type: 'pie',
+      data: {
+      labels: ['USA', 'UK', 'Switzerland', 'Germany', 'Others'],
+      datasets: [{
+      data: [35, 25, 20, 15, 5],
+      backgroundColor: [
+      'rgba(59, 130, 246, 0.8)',
+      'rgba(16, 185, 129, 0.8)',
+      'rgba(139, 92, 246, 0.8)',
+      'rgba(251, 146, 60, 0.8)',
+      'rgba(239, 68, 68, 0.8)'
+      ]
+      }]
+      },
+      options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+      legend: {
+      position: 'bottom',
+      labels: { color: 'white' }
+      }
+      }
+      }
+      });
+      }
+
+      // Nature Chart
+      const natureCtx = document.getElementById('natureChart');
+      if (natureCtx) {
+      new Chart(natureCtx, {
+      type: 'polarArea',
+      data: {
+      labels: ['Interest', 'Dividend', 'Royalty', 'Services', 'Others'],
+      datasets: [{
+      data: [30, 25, 15, 20, 10],
+      backgroundColor: [
+      'rgba(59, 130, 246, 0.6)',
+      'rgba(16, 185, 129, 0.6)',
+      'rgba(139, 92, 246, 0.6)',
+      'rgba(251, 146, 60, 0.6)',
+      'rgba(239, 68, 68, 0.6)'
+      ]
+      }]
+      },
+      options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+      legend: { display: false }
+      },
+      scales: {
+      r: {
+      grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      ticks: { display: false }
+      }
+      }
+      }
+      });
+      }
+
+      // Comparison Chart
+      const comparisonCtx = document.getElementById('comparisonChart');
+      if (comparisonCtx) {
+      new Chart(comparisonCtx, {
+      type: 'bar',
+      data: {
+      labels: ['15CA-A', '15CA-B', '15CA-C', '15CA-D', '15CB'],
+      datasets: [{
+      label: 'This Month',
+      data: [65, 59, 80, 81, 56],
+      backgroundColor: 'rgba(99, 102, 241, 0.8)'
+      }, {
+      label: 'Last Month',
+      data: [28, 48, 40, 19, 86],
+      backgroundColor: 'rgba(156, 163, 175, 0.8)'
+      }]
+      },
+      options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+      legend: {
+      labels: { color: 'white' }
+      }
+      },
+      scales: {
+      x: {
+      grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+      },
+      y: {
+      grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+      }
+      }
+      }
+      });
+      }
+
+      // Top Remitters
+      const topRemitters = document.getElementById('topRemitters');
+      if (topRemitters) {
+      const remitters = [
+      {name: 'ABC Corporation', amount: '¹45,00,000', count: 12},
+      {name: 'XYZ Industries', amount: '¹38,50,000', count: 8},
+      {name: 'Tech Solutions Ltd', amount: '¹32,00,000', count: 15},
+      {name: 'Global Services', amount: '¹28,75,000', count: 6},
+      {name: 'Export House', amount: '¹24,00,000', count: 9}
+      ];
+
+      topRemitters.innerHTML = remitters.map((r, i) => 
+      '<div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">' +
+      '<div class="flex items-center">' +
+      '<span class="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-medium mr-3">' + (i + 1) + '</span>' +
+      '<div>' +
+      '<p class="font-medium">' + r.name + '</p>' +
+      '<p class="text-xs text-gray-400">' + r.count + ' transactions</p>' +
+      '</div>' +
+      '</div>' +
+      '<span class="text-sm font-medium text-green-400">' + r.amount + '</span>' +
+      '</div>'
+      ).join('');
+      }
+
+      // Key Metrics
+      const keyMetrics = document.getElementById('keyMetrics');
+      if (keyMetrics) {
+      const metrics = [
+      {label: 'Total Remittance', value: '¹2.5 Cr', change: '+12%', positive: true},
+      {label: 'Avg Transaction', value: '¹15.2 L', change: '+5%', positive: true},
+      {label: 'Compliance Rate', value: '98.5%', change: '-0.5%', positive: false},
+      {label: 'Processing Time', value: '2.3 days', change: '-15%', positive: true}
+      ];
+
+      keyMetrics.innerHTML = metrics.map(m => 
+      '<div class="p-3 rounded-lg bg-gray-800/50">' +
+      '<p class="text-sm text-gray-400">' + m.label + '</p>' +
+      '<div class="flex items-baseline justify-between mt-1">' +
+      '<span class="text-xl font-bold">' + m.value + '</span>' +
+      '<span class="text-xs ' + (m.positive ? 'text-green-400' : 'text-red-400') + '">' +
+      '<i class="fas fa-arrow-' + (m.positive ? 'up' : 'down') + ' mr-1"></i>' + m.change +
+      '</span>' +
+      '</div>' +
+      '</div>'
+      ).join('');
+      }
+      }
+
+      // Display Master Data
+      function displayMasterData() {
+      // Banks
+      const bankList = document.getElementById('bankList');
+      if (bankList) {
+      bankList.innerHTML = masterData.banks.map(bank => 
+      '<div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-colors">' +
+      '<div>' +
+      '<p class="font-medium">' + bank.name + '</p>' +
+      '<p class="text-sm text-gray-400">BSR Code: ' + bank.code + '</p>' +
+      '</div>' +
+      '<button onclick="deleteMasterData(\'bank\', \'' + bank.code + '\')" class="p-2 rounded-lg hover:bg-red-500/20 text-red-400 transition-colors">' +
+      '<i class="fas fa-trash"></i>' +
+      '</button>' +
+      '</div>'
+      ).join('');
+      }
+
+      // Nature of Remittance
+      const natureList = document.getElementById('natureList');
+      if (natureList) {
+      natureList.innerHTML = masterData.natureOfRemittance.map(nature => 
+      '<div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-colors">' +
+      '<div>' +
+      '<p class="font-medium">' + nature.name + '</p>' +
+      '<p class="text-sm text-gray-400">Code: ' + nature.code + '</p>' +
+      '</div>' +
+      '<button onclick="deleteMasterData(\'nature\', \'' + nature.code + '\')" class="p-2 rounded-lg hover:bg-red-500/20 text-red-400 transition-colors">' +
+      '<i class="fas fa-trash"></i>' +
+      '</button>' +
+      '</div>'
+      ).join('');
+      }
+      }
+
+      // Add Master Data
+      function addMasterData(type) {
+      sweetAlert({
+      title: 'Add ' + (type === 'bank' ? 'Bank' : 'Nature of Remittance'),
+      text: 'Enter the code and name',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Add',
+      callback: function() {
+      const code = prompt('Enter code:');
+      const name = prompt('Enter name:');
+
+      if (code && name) {
+      if (type === 'bank') {
+      masterData.banks.push({code: code, name: name});
+      } else if (type === 'nature') {
+      masterData.natureOfRemittance.push({code: code, name: name});
+      }
+
+      saveMasterData();
+      displayMasterData();
+      showNotification('Success', 'Master data added', 'success');
+      logActivity('Added ' + type + ' master data: ' + name);
+      }
+      }
+      });
+      }
+
+      // Delete Master Data
+      function deleteMasterData(type, code) {
+      sweetAlert({
+      title: 'Delete Master Data?',
+      text: 'Are you sure you want to delete this item?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      callback: function() {
+      if (type === 'bank') {
+      masterData.banks = masterData.banks.filter(b => b.code !== code);
+      } else if (type === 'nature') {
+      masterData.natureOfRemittance = masterData.natureOfRemittance.filter(n => n.code !== code);
+      }
+
+      saveMasterData();
+      displayMasterData();
+      showNotification('Success', 'Master data deleted', 'success');
+      logActivity('Deleted ' + type + ' master data');
+      }
+      });
+      }
+
+      // Activity Log
+      function logActivity(action) {
+      const activity = {
+      timestamp: new Date().toISOString(),
+      action: action,
+      user: 'Admin User'
+      };
+
+      activityLog.unshift(activity);
+      if (activityLog.length > 100) {
+      activityLog = activityLog.slice(0, 100);
+      }
+
+      localStorage.setItem('form15ca_activity', JSON.stringify(activityLog));
+      }
+
+      // Display Activity Log
+      function displayActivityLog() {
+      const saved = localStorage.getItem('form15ca_activity');
+      if (saved) {
+      activityLog = JSON.parse(saved);
+      }
+
+      const container = document.getElementById('activityLog');
+      if (container) {
+      if (activityLog.length === 0) {
+      container.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fas fa-history text-4xl mb-4"></i><p>No activity recorded</p></div>';
+      } else {
+      container.innerHTML = activityLog.map(activity => 
+      '<div class="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">' +
+      '<div>' +
+      '<p class="font-medium">' + activity.action + '</p>' +
+      '<p class="text-xs text-gray-400">' + formatDate(activity.timestamp) + ' by ' + activity.user + '</p>' +
+      '</div>' +
+      '</div>'
+      ).join('');
+      }
+      }
+      }
+
+      // Clear Activity Log
+      function clearActivityLog() {
+      sweetAlert({
+      title: 'Clear Activity Log?',
+      text: 'Are you sure you want to clear the activity log?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Clear',
+      callback: function() {
+      activityLog = [];
+      localStorage.setItem('form15ca_activity', JSON.stringify(activityLog));
+      displayActivityLog();
+      showNotification('Success', 'Activity log cleared', 'success');
+      }
+      });
+      }
+
+      // Update Recent Activity
+      function updateRecentActivity() {
+      const container = document.getElementById('recentActivity');
+      if (container && activityLog.length > 0) {
+      const recent = activityLog.slice(0, 5);
+      container.innerHTML = recent.map(activity => 
+      '<div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-colors">' +
+      '<div class="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center">' +
+      '<i class="fas fa-clock text-indigo-400"></i>' +
+      '</div>' +
+      '<div class="flex-1">' +
+      '<p class="font-medium">' + activity.action + '</p>' +
+      '<p class="text-xs text-gray-400">' + formatDate(activity.timestamp) + '</p>' +
+      '</div>' +
+      '</div>'
+      ).join('');
+      }
+      }
+
+      // Quick Actions
+      function showQuickActions() {
+      document.getElementById('quickActionsModal').classList.remove('hidden');
+      document.getElementById('quickActionsModal').classList.add('flex');
+      }
+
+      function hideQuickActions() {
+      document.getElementById('quickActionsModal').classList.add('hidden');
+      document.getElementById('quickActionsModal').classList.remove('flex');
+      }
+
+      function quickAction(action) {
+      hideQuickActions();
+
+      switch(action) {
+      case 'export-today':
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('exportFrom').value = today;
+      document.getElementById('exportTo').value = today;
+      exportData();
+      break;
+
+      case 'generate-report':
+      showNotification('Info', 'Report generation in progress...', 'info');
+      setTimeout(() => {
+      showNotification('Success', 'Monthly report generated', 'success');
+      }, 2000);
+      break;
+
+      case 'bulk-validate':
+      showNotification('Info', 'Validating all entries...', 'info');
+      setTimeout(() => {
+      showNotification('Success', 'All entries validated', 'success');
+      }, 2000);
+      break;
+
+      case 'sync-data':
+      showNotification('Info', 'Syncing with cloud...', 'info');
+      setTimeout(() => {
+      showNotification('Success', 'Data synced successfully', 'success');
+      }, 2000);
+      break;
+      }
+      }
+
+      // Notifications
+      function showNotifications() {
+      sweetAlert({
+      title: 'Notifications',
+      text: 'Notifications panel coming soon! You will be able to view system alerts, updates, and important messages here.',
+      icon: 'info',
+      confirmButtonText: 'OK'
+      });
+      }
+
+      // Show notification
+      function showNotification(title, message, type = 'success') {
+      const notification = document.getElementById('notification');
+      const iconEl = document.getElementById('notificationIcon');
+      const titleEl = document.getElementById('notificationTitle');
+      const messageEl = document.getElementById('notificationMessage');
+
+      titleEl.textContent = title;
+      messageEl.textContent = message;
+
+      const icons = {
+      success: '<i class="fas fa-check-circle text-green-400 text-xl"></i>',
+      error: '<i class="fas fa-exclamation-circle text-red-400 text-xl"></i>',
+      warning: '<i class="fas fa-exclamation-triangle text-yellow-400 text-xl"></i>',
+      info: '<i class="fas fa-info-circle text-blue-400 text-xl"></i>'
+      };
+
+      iconEl.innerHTML = icons[type] || icons.info;
+
+      notification.classList.add('show');
+      setTimeout(() => {
+      notification.classList.remove('show');
+      }, 3000);
+      }
+
+      function hideNotification() {
+      document.getElementById('notification').classList.remove('show');
+      }
+
+      // Show/hide loading
+      function showLoading(title = 'Processing...', subtitle = 'Please wait') {
+      document.getElementById('loadingText').textContent = title;
+      document.getElementById('loadingSubtext').textContent = subtitle;
+      document.getElementById('loadingModal').classList.remove('hidden');
+      document.getElementById('loadingModal').classList.add('flex');
+      }
+
+      function hideLoading() {
+      document.getElementById('loadingModal').classList.add('hidden');
+      document.getElementById('loadingModal').classList.remove('flex');
+      }
+
+      // Format date
+      function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      const now = new Date();
+      const diff = now - date;
+
+      if (diff < 60000) return 'Just now';
+      if (diff < 3600000) return Math.floor(diff / 60000) + ' min ago';
+      if (diff < 86400000) return Math.floor(diff / 3600000) + ' hours ago';
+      if (diff < 604800000) return Math.floor(diff / 86400000) + ' days ago';
+
+      return date.toLocaleDateString();
+      }
+
+      // Setup event listeners
+      function setupEventListeners() {
+      // Close modals on click outside
+      document.getElementById('quickActionsModal').addEventListener('click', function(e) {
+      if (e.target === this) hideQuickActions();
+      });
+
+      document.getElementById('loadingModal').addEventListener('click', function(e) {
+      if (e.target === this) hideLoading();
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey || e.metaKey) {
+      switch(e.key) {
+      case 's':
+      e.preventDefault();
+      if (document.getElementById('dataForm').offsetParent !== null) {
+      validateAndSave();
+      }
+      break;
+      case 'e':
+      e.preventDefault();
+      exportData();
+      break;
+      case 'n':
+      e.preventDefault();
+      showSection('forms');
+      break;
+      }
+      }
+      });
+      }
+
+      // Initialize on load
+      document.addEventListener('DOMContentLoaded', function() {
+      initApp();
+      });
+    </script>
+  </body>
+</html>
+	
